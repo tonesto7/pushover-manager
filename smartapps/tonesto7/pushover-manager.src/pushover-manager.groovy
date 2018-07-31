@@ -14,7 +14,8 @@
  *
  */
 
-def appVer() {"v1.0.20180730"}
+import groovy.json.*
+def appVer() {"v1.0.20180731"}
 
 definition(
     name: "Pushover-Manager",
@@ -22,9 +23,9 @@ definition(
     author: "Anthony Santilli",
     description: "Creates and Manages Pushover devices",
     category: "My Apps",
-    iconUrl: "https://pushover.net/images/icon-72.png",
-    iconX2Url: "https://pushover.net/images/icon-256.png",
-    iconX3Url: "https://pushover.net/images/icon-512.png")
+    iconUrl: "https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/icon-72.png",
+    iconX2Url: "https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/icon-256.png",
+    iconX3Url: "https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/icon-512.png")
 
 
 preferences {
@@ -37,12 +38,12 @@ def appInfoSect()	{
         def str = ""
         str += "${app?.name}"
         str += "\nVersion: ${appVer()}"
-        paragraph str, image: "https://pushover.net/images/icon-512.png"
+        paragraph str, image: "https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/icon-512.png"
     }
 }
 
 def mainPage() {
-	return dynamicPage(name: "mainPage", title: "", install: true, uninstall: true) {
+    return dynamicPage(name: "mainPage", title: "", install: true, uninstall: true) {
         appInfoSect()
         def validated = (apiKey && userKey && getValidated())
         def devices = validated ? getValidated(true) : []
@@ -51,13 +52,27 @@ def mainPage() {
             input "userKey", "text", title: "User Key:", description: "Pushover User Key", required: true, submitOnChange: true
         }
         if(validated) {
-            section("Device Management:") {
-                // log.debug "devices: ${getValidated("deviceList")}"
-                paragraph title: "What are these?", "A device will be created for each device selected below..."
-                input "pushDevices", "enum", title: "Select PushOver Clients", description: "", multiple: true, required: true, options: devices, submitOnChange: true
+            section("Statistics:") {
+                def msgData = state?.messageData
+                def str = ""
+                def limit = msgData?.limit
+                def remain = msgData?.remain
+                def reset = msgData?.resetDt
+                str += remain || limit ? "Message Details (Month):" : ""
+                str += limit ? "\n • Limit: (${limit})" : ""
+                str += remain ? "\n • Remaining: (${remain})" : ""
+                str += (remain?.isNumber() && limit?.isNumber()) ? "\n • Used: (${(limit?.toLong() - remain?.toLong())})" : ""
+                paragraph str
+            }
+            section("Clients:") {
+                def str = ""
+                devices?.each { cl-> str += "\n • ${cl}" }
+                paragraph title: "Pushover Clients:", (str != "" ? str : "No Clients Found..."), state: "complete"
+                // paragraph title: "What are these?", "A device will be created for each device selected below..."
+                // input "pushDevices", "enum", title: "Select PushOver Clients", description: "", multiple: true, required: false, options: devices, submitOnChange: true
             }
             section("Test Notifications:", hideable: true, hidden: true) {
-                input "testDevices", "enum", title: "Select Devices", description: "Select Devices to Send Test Notification Too...", multiple: true, required: false, options: settings?.pushDevices, submitOnChange: true
+                input "testDevices", "enum", title: "Select Devices", description: "Select Devices to Send Test Notification Too...", multiple: true, required: false, options: devices, submitOnChange: true
                 if(settings?.testDevices) {
                     input "testMessage", "text", title: "Test Message to Send:", description: "Enter message to send...", required: false, submitOnChange: true
                     if(settings?.testMessage && settings?.testMessage?.length() > 0) {
@@ -68,6 +83,12 @@ def mainPage() {
         }
         state?.testMessageSent = false
     }
+}
+
+def isValidated() { }
+
+def getDeviceList() {
+    return (settings?.apiKey && settings?.userKey && getValidated()) ? getValidated(true) : []
 }
 
 def messageTest() {
@@ -94,21 +115,25 @@ def sendTestMessage() {
 }
 
 def installed() {
-	log.debug "Installed with settings: ${settings}"  
-	initialize()
+    log.debug "Installed with settings: ${settings}"  
+    initialize()
 }
 
 def updated() {
-	log.debug "Updated with settings: ${settings}"
-	initialize()
+    log.debug "Updated with settings: ${settings}"
+    initialize()
 }
 
 def initialize() {
     unsubscribe()
-    addRemoveDevices()
-    updateDevices()
     subscribe(location, "pushoverManagerMsg", locMessageHandler)
-    sendLocationEvent(name: "pushoverManager", value: "refresh", data: [devices: state?.pushoverDevices ?: [], sounds: getSoundOptions()] , isStateChange: true, descriptionText: "Pushover Manager Device List Refresh")
+    subscribe(location, "pushoverManagerPoll", locMessageHandler)
+    sendDeviceListEvent()
+}
+
+def sendDeviceListEvent() {
+    log.trace "sendDeviceListEvent..."
+    sendLocationEvent(name: "pushoverManager", value: "refresh", data: [devices: getDeviceList(), sounds: getSoundOptions()], isStateChange: true, descriptionText: "Pushover Manager Device List Refresh")
 }
 
 def uninstalled() {
@@ -116,12 +141,28 @@ def uninstalled() {
     addRemoveDevices(true)
 }
 
-// def getDeviceMap() {
-//     Map items = [:]
-//     state?.pushoverDevices?.each {
-//         items["$"]
-//     }
-// }
+def locMessageHandler(evt) {
+    log.debug "locMessageHandler: ${evt?.jsonData}"
+    if (!evt) return
+    if (!(settings?.apiKey =~ /[A-Za-z0-9]{30}/) && (settings?.userKey =~ /[A-Za-z0-9]{30}/)) {
+        log.error "API key '${apiKey}' or User key '${userKey}' is not properly formatted!"
+        return 
+    }
+    switch (evt?.value) {
+        case "sendMsg":
+            List pushDevices = []
+            if (evt?.jsonData && evt?.jsonData?.devices && evt?.jsonData?.msgData?.size()) {
+                evt?.jsonData?.devices?.each { nd->
+                    pushoverNotification(nd as String, evt?.jsonData?.msgData)
+                }
+            }
+            break
+        case "poll":
+            log.debug "locMessageHandler: poll()"
+            sendDeviceListEvent()
+            break
+    }
+}
 
 def getValidated(devList=false){
     def validated = false
@@ -145,7 +186,7 @@ def getValidated(devList=false){
                 } else {
                     if(devList) {
                         if(resp?.data && resp?.data?.devices) {
-                            log.debug "Found (${resp?.data?.devices?.size()}) Pushover Devices..."
+                            // log.debug "Found (${resp?.data?.devices?.size()}) Pushover Devices..."
                             deviceOptions = resp?.data?.devices
                             state?.pushoverDevices = resp?.data?.devices
                         } else { 
@@ -172,12 +213,12 @@ def getValidated(devList=false){
 }
 
 def getSoundOptions() {
-    log.debug "Generating Sound Notification List..."
+    // log.debug "Generating Sound Notification List..."
     def myOptions = [:]
     try {
         httpGet(uri: "https://api.pushover.net/1/sounds.json?token=${settings?.apiKey}") { resp ->
             if(resp?.status == 200) {
-                log.debug "Found (${resp?.data?.sounds?.size()}) Sounds..."
+                // log.debug "Found (${resp?.data?.sounds?.size()}) Sounds..."
                 def mySounds = resp?.data?.sounds
                 // log.debug "mySounds: $mySounds"
                 mySounds?.each { snd->
@@ -197,168 +238,158 @@ def getSoundOptions() {
     return myOptions
 }
 
-def getDeviceDni(devName) {
-    return "pushover_device_${devName}"
-}
-
-def getDeviceLabel(devName) {
-    return "Pushover - ${devName}"
-}
-
-def addRemoveDevices(uninst=false) {
-    //log.trace "addRemoveDevices($uninst)..."
-    try {
-        def delete = []
-        if(uninst == false) {
-            List devsInUse = []
-            List selectedDevices = settings?.pushDevices
-            selectedDevices?.each { dev ->
-                String dni = getDeviceDni(dev)
-                def d = getChildDevice(dni)
-                if(!d) {
-                    d = addChildDevice("tonesto7", "Pushover-Device", dni, null, [label: getDeviceLabel(dev), data: [apiKey: settings?.apiKey, userKey: settings?.userKey, deviceName: dev] ])
-                    d.completedSetup = true
-                    log.info "PushOver Device Created: (${d?.displayName}) with id: [${dni}]"
-                } else {
-                    // log.debug "found ${d?.displayName} with dni: ${dni} already exists"
-                }
-                devsInUse?.push(dni as String)
-            }
-            delete = app.getChildDevices(true)?.findAll { !(it?.deviceNetworkId?.toString() in devsInUse) }
-        } else {
-            delete = app.getChildDevices(true)
-        }
-        if(delete?.size() > 0) {
-            log.warn "Device Delete: ${delete} | Removing (${delete?.size()}) Devices..."
-            delete?.each {
-                deleteChildDevice(it?.deviceNetworkId, true)
-                log.warn "Deleted the Device: [${it?.displayName}]"
-            }
-        }
-        return true
-    } catch (ex) {
-        if(ex instanceof physicalgraph.exception.ConflictException) {
-            def msg = "Error: Can't Delete App because Devices are still in use in other Apps, Routines, or Rules.  Please double check before trying again."
-            log.warn "addRemoveDevices Exception | $msg"
-        } else if(ex instanceof physicalgraph.app.exception.UnknownDeviceTypeException) {
-            def msg = "Error: Device Handlers are likely Missing or Not Published.  Please verify all device handlers are present before continuing."
-            log.warn "addRemoveDevices Exception | $msg"
-        } else { log.error "addRemoveDevices Exception: ${ex}" }
-        return false
+def filterPriorityMsg(msg, msgPr) {
+    if(msg?.startsWith("[L]")) { 
+        msgPr = "-1"
+        msg = msg?.minus("[L]")
+    } else if(msg?.startsWith("[N]")) {
+        msgPr = "0"
+        msg = msg?.minus("[N]")
+    } else if(msg?.startsWith("[H]")) {
+        msgPr = "1"
+        msg = msg?.minus("[H]")
+    } else if(msg?.startsWith("[E]")) {
+        msgPr = "2"
+        msg = msg?.minus("[E]")
     }
+    return [msg: msg, msgPr: msgPr]
 }
 
-def updateDevices() {
-    app?.getChildDevices(true)?.each { dev->
-        dev?.updDataValue("apiKey", settings?.apiKey)
-        dev?.updDataValue("userKey", settings?.userKey)
-    }
-}
-
-def locMessageHandler(evt) {
-    log.debug "locMessageHandler: ${evt?.jsonData}"
-    if (!evt) return
-    switch (evt?.value) {
-        case "send":
-            List pushDevices = []
-            if (evt?.jsonData && evt?.jsonData?.devices && evt?.jsonData?.msgData?.size()) {
-                evt?.jsonData?.devices?.each { nd->
-                    pushoverNotification(nd as String, evt?.jsonData?.msgData, evt?.jsonData?.image)
-                }
-            }
-            break
-    }
-}
-
-def pushoverNotification(deviceName, msgData, imageData) {
-    log.debug "pushoverNotification($deviceName, $msgData, $imageData)"
+void pushoverNotification(deviceName, msgData) {
+    log.debug "pushoverNotification($deviceName, $msgData)"
     if(deviceName && msgData) {
         if(msgData?.message != null && msgData?.message?.length() > 0 && deviceName && settings?.apiKey && settings?.userKey) {
-            String msgPriority = msgData?.priority ?: "0"
-            if(msgData?.message?.startsWith("[L]")) { 
-                msgPriority = "-1"
-                msgData?.message = msgData?.message?.minus("[L]")
-            } else if(msgData?.message?.startsWith("[N]")) {
-                msgPriority = "0"
-                msgData?.message = msgData?.message?.minus("[N]")
-            } else if(msgData?.message?.startsWith("[H]")) {
-                msgPriority = "1"
-                msgData?.message = msgData?.message?.minus("[H]")
-            } else if(msgData?.message?.startsWith("[E]")) {
-                msgPriority = "2"
-                msgData?.message = msgData?.message?.minus("[E]")
+            def hasImage = (msgData?.image && msgData?.image?.url && msgData?.image?.type)
+            def filtr = filterPriorityMsg(msgData?.message, msgData?.priority)
+            String message = filtr?.msg
+            String priority = filtr?.msgPr ?: "0"
+            def body
+            Map bodyItems = [
+                token: settings?.apiKey?.trim(),
+                user: settings?.userKey?.trim(),
+                title: msgData?.title,
+                message: message,
+                priority: priority,
+                device: deviceName,
+                retry: msgData?.retry ?: 30,
+                expire: msgData?.expire ?: 10800
+            ]
+            if(msgData?.sound) { bodyItems?.sound = msgData?.sound }
+            if(msgData?.url) { bodyItems?.url = msgData?.url }
+            if(msgData?.url_title) { bodyItems?.url_title = msgData?.urlTitle }
+            if(msgData?.timestamp) { bodyItems?.timestamp = msgData?.timestamp }
+            if(msgData?.html == true) { bodyItems?.html = 1 }
+            
+            
+            if(hasImage) {
+                String bodyStr = ""
+                bodyItems?.each { k, v ->
+                    bodyStr += "------pushoverManagerApp\r\n"
+                    bodyStr += "Content-Disposition: form-data; name=\"${k}\"\r\n\r\n${v}\r\n"
+                }
+                if(msgData?.image && msgData?.image?.url && msgData?.image?.type) {
+                    bodyStr += "------pushoverManagerApp\r\n"
+                    bodyStr += "Content-Disposition: form-data; name=\"attachment\"; filename=\"${msgData?.image?.name}\"\r\nContent-Type: ${msgData?.image?.type}\r\n\r\n\r\n${getFile(msgData?.image?.url, msgData?.image?.type)}"
+                }
+                bodyStr += "------pushoverManagerApp--"
+                body = bodyStr as String
+            } else {
+                body = new JsonOutput().toJson(bodyItems)
             }
-            // log.debug "Sending Message: ${msgData?.message} | Priority: (${msgPriority}) | Device: (${deviceName})"
-
-            // Define the initial postBody keys and values for all messages
             Map params = [
                 uri: "https://api.pushover.net/1/messages.json",
-                contentType: "application/json",
-                body: [
-                    token: settings?.apiKey?.trim(),
-                    user: settings?.userKey?.trim(),
-                    message: msgData?.message,
-                    priority: msgPriority,
-                    device: deviceName,
-                    retry: msgData?.retry ?: 30,
-                    expire: msgData?.expire ?: 10800
-                ]
+                contentType: "multipart/form-data; boundary=----pushoverManagerApp",
+                body: body
             ]
-            if(msgData?.sound) {
-                params?.body?.sound = msgData?.sound
-            }
-            if(msgData?.url) {
-                params?.body?.url = msgData?.url
-                params?.body?.url_title = msgData?.urlTitle
-            }
-            if(msgData?.timestamp) {
-                params?.body?.timestamp = msgData?.timestamp
-            }
-            if(msgData?.image) {
-                params?.body?.attachment = msgData?.image
-            }
-            if(msgData?.title) {
-                params?.body?.title = msgData?.title
-            }
-            if ((settings?.apiKey =~ /[A-Za-z0-9]{30}/) && (settings?.userKey =~ /[A-Za-z0-9]{30}/)) {
-                try {
-                    httpPostJson(params) { resp ->
-                        def limit = resp?.getHeaders("X-Limit-App-Limit")
-                        def remain = resp?.getHeaders("X-Limit-App-Remaining")
-                        def resetDt = resp?.getHeaders("X-Limit-App-Reset")
-                        if(resp?.status == 200) {
-                            log.debug "Message Received by Pushover Server | Monthly Messages Remaining (${remain?.value[0]} of ${limit?.value[0]})"
-                            state?.lastMessage = msgData?.message
-                            state?.lastMessageDt = formatDt(new Date())
-                        } else if (resp?.status == 429) { 
-                            log.warn "Can't Send Notification... You have reached your (${limit?.value[0]}) notification limit for the month"
-                        } else {
-                            sendPush("pushoverNotification ERROR: 'Pushover' received HTTP error ${resp?.status}. Check your keys!")
-                            log.error "Received HTTP error ${resp?.status}. Check your keys!"
-                        }
-                    }
-                } catch (ex) {
-                    if(ex instanceof groovyx.net.http.HttpResponseException && ex?.response) {
-                        log.error "pushoverNotification() HttpResponseException | Status: (${ex?.response?.status}) | Data: ${ex?.response?.data}"
+            
+            // log.debug "params: $params"
+            try {
+                httpPost(params) { resp ->
+                    def limit = resp?.getHeaders("X-Limit-App-Limit")
+                    def remain = resp?.getHeaders("X-Limit-App-Remaining")
+                    def resetDt = resp?.getHeaders("X-Limit-App-Reset")
+                    if(resp?.status == 200) {
+                        log.debug "Message Received by Pushover Server | Monthly Messages Remaining (${remain?.value[0]} of ${limit?.value[0]})"
+                        state?.messageData = [lastMessage: msgData?.message, lastMessageDt: formatDt(new Date()), remain: remain?.value[0], limit: limit?.value[0], resetDt: resetDt?.value[0]]
+                    } else if (resp?.status == 429) { 
+                        log.warn "Can't Send Notification... You have reached your (${limit?.value[0]}) notification limit for the month"
                     } else {
-                        log.error "pushoverNotification Exception: ${ex?.message}" 
+                        sendPush("pushoverNotification() ERROR: 'Pushover' received HTTP error ${resp?.status}. Check your keys!")
+                        log.error "Received HTTP error ${resp?.status}. Check your keys!"
                     }
-                } 
-            } else {
-                log.error "API key '${apiKey}' or User key '${userKey}' is not properly formatted!"
+                }
+            } catch (ex) {
+                // if(ex instanceof groovyx.net.http.HttpResponseException && ex?.response) {
+                    log.error "pushoverNotification() HttpResponseException | Status: (${ex?.response?.status}) | Data: ${ex?.response?.getData()}"
+                // } else {
+                    log.error "pushoverNotification Exception: ${ex?.message}" 
+                // }
             }
         }
     }
+}
+
+def getFile(url, fileType, base64=false) {
+    try {
+        def params = [uri: url, contentType: "$fileType"]
+        httpGet(params) { resp ->
+            if(resp?.status == 200) {
+                if(resp?.data) {
+                    Byte[] bytes = resp?.data?.getBytes()
+                    def size = resp?.getHeaders("Content-Length")
+                    if(size?.value && size?.value[0] && size?.value[0]?.isNumber()) {
+                        if(size?.value[0]?.toLong() > 2621440) {
+                            log.debug("FileSize: (${getFileSize(size?.value[0])})")
+                            log.warn "unable to encode file because it is larger than the 2.5MB size limit"
+                            return null
+                        }
+                    }
+                    if(!base64) { return bytes }
+                    String enc = bytes?.encodeBase64() as String
+                    return enc ? "data:${fileType};base64,${enc?.toString()}" : null
+                }
+            } else {
+                log.error("getFile Resp: ${resp?.status} ${url}")
+                return null
+            }
+        }
+    } catch (ex) {
+        if(ex instanceof groovyx.net.http.ResponseParseException) {
+            if(ex?.statusCode != 200) {
+                log.error("getFile Resp: ${ex?.statusCode} ${url}")
+                log.error "getFile Exception:", ex
+            }
+        } else if(ex instanceof groovyx.net.http.HttpResponseException && ex?.response) {
+            log.error("getFile Resp: ${ex?.response?.status} ${url}")
+        } else {
+            log.error "getFile Exception:", ex
+        }
+        return null
+    }
+}
+
+def getFileSize(size) {
+    String modifiedFileSize = null;
+    double fileSize = 0.0;
+    fileSize = size?.toDouble()
+    if (fileSize < 1024) {
+        modifiedFileSize = String.valueOf(fileSize).concat("B")
+    } else if (fileSize > 1024 && fileSize < (1024 * 1024)) {
+        modifiedFileSize = String.valueOf(Math.round((fileSize / 1024 * 100.0)) / 100.0).concat("KB")
+    } else {
+        modifiedFileSize = String.valueOf(Math.round((fileSize / (1024 * 1204) * 100.0)) / 100.0).concat("MB")
+    }
+    return modifiedFileSize
 }
 
 def getDtNow() {
-	def now = new Date()
-	return formatDt(now, false)
+    def now = new Date()
+    return formatDt(now, false)
 }
 
 def formatDt(dt, mdy = true) {
-	def formatVal = mdy ? "MMM d, yyyy - h:mm:ss a" : "E MMM dd HH:mm:ss z yyyy"
-	def tf = new java.text.SimpleDateFormat(formatVal)
-	if(location?.timeZone) { tf.setTimeZone(location?.timeZone) }
-	return tf.format(dt)
+    def formatVal = mdy ? "MMM d, yyyy - h:mm:ss a" : "E MMM dd HH:mm:ss z yyyy"
+    def tf = new java.text.SimpleDateFormat(formatVal)
+    if(location?.timeZone) { tf.setTimeZone(location?.timeZone) }
+    return tf.format(dt)
 }

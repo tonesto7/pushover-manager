@@ -1,5 +1,5 @@
 /**
- *  Pushover-Manager
+ *  Pushover-Test
  *
  *  Copyright 2018 Anthony Santilli
  *
@@ -13,18 +13,17 @@
  *  for the specific language governing permissions and limitations under the License.
  *
  */
-
 def appVer() {"v1.0.20180730"}
 
 definition(
-    name: "Pushover-Location-Test",
+    name: "Pushover-Test",
     namespace: "tonesto7",
     author: "Anthony Santilli",
     description: "Test Pushover Location Integration",
     category: "My Apps",
-    iconUrl: "https://pushover.net/images/icon-72.png",
-    iconX2Url: "https://pushover.net/images/icon-256.png",
-    iconX3Url: "https://pushover.net/images/icon-512.png")
+    iconUrl: "https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/icon-72.png",
+    iconX2Url: "https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/icon-256.png",
+    iconX3Url: "https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/icon-512.png")
 
 
 preferences {
@@ -37,7 +36,7 @@ def appInfoSect()	{
         def str = ""
         str += "${app?.name}"
         str += "\nVersion: ${appVer()}"
-        paragraph str, image: "https://pushover.net/images/icon-512.png"
+        paragraph str, image: "https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/icon-512.png"
     }
 }
 
@@ -46,9 +45,9 @@ def mainPage() {
         appInfoSect()
         if(state?.isInstalled == true) {
             section("Test Notifications:", hideable: true, hidden: false) {
-                input "testDevices", "enum", title: "Select Devices", description: "Select Devices to Send Test Notification Too...", multiple: true, required: false, options: state?.pushDevices, submitOnChange: true
+                input "testDevices", "enum", title: "Select Devices", description: "Select Devices to Send Test Notification Too...", multiple: true, required: false, options: state?.pushoverManagerData?.devices, submitOnChange: true
                 if(settings?.testDevices) {
-                    input "testSound", "enum", title: "Notification Sound:", description: "Select a sound...", defaultValue: "pushover", required: false, multiple: false, submitOnChange: true, options: state?.pushSounds
+                    input "testSound", "enum", title: "Notification Sound:", description: "Select a sound...", defaultValue: "pushover", required: false, multiple: false, submitOnChange: true, options: state?.pushoverManagerData?.sounds
                     input "testMessage", "text", title: "Test Message to Send:", description: "Enter message to send...", required: false, submitOnChange: true
                     if(settings?.testMessage && settings?.testMessage?.length() > 0) {
                         href "messageTest", title: "Send Message", description: ""
@@ -70,7 +69,8 @@ def messageTest() {
             if(state?.testMessageSent == true) {
                 paragraph "Message Already Sent... Go Back to send again..."
             } else {
-                paragraph "Sending ${settings?.testMessage} to ${settings?.testDevices}" 
+                paragraph title: "Sending Message: ", "${settings?.testMessage}"
+                paragraph "to Device(s): ${settings?.testDevices}" 
                 sendTestMessage()
             }
             state?.testMessageSent = true
@@ -81,18 +81,21 @@ def messageTest() {
 def sendTestMessage() {
     Map msgData = [
         title: "${app?.name}",
-        html: 0,
+        html: false,
         message: settings?.testMessage,
-        priority: msgPriority,
+        priority: 0,
         retry: 30,
         expire: 10800,
         sound: settings?.testSound,
-        url: "",
-        url_title: "",
+        url: "https://www.foreverbride.com/files/6414/7527/3346/test.png",
+        url_title: "Test Image",
         timestamp: new Date().getTime(),
-        image: "https://community.hubitat.com/uploads/default/original/1X/f994d8c0dd92a7e88d22c5f84a633925f02d66e5.png"
     ]
-    sendLocationEvent(name: "pushoverManagerMsg", value: "send", data: [devices: settings?.testDevices, msgData: msgData], isStateChange: true, descriptionText: "Sending Message to ${settings?.testDevices}")
+    // sendLocationEvent(name: "pushoverManagerMsg", value: "sendMsg", data: [devices: settings?.testDevices, msgData: msgData, appId: app?.getId()], isStateChange: true, descriptionText: "Sending Message to ${settings?.testDevices}")
+    msgData?.image = [url: "https://www.foreverbride.com/files/6414/7527/3346/test.png", type: "image/png", name: "test.png"]
+    msgData?.remove("url")
+    msgData?.remove("url_title")
+    sendLocationEvent(name: "pushoverManagerMsg", value: "sendMsg", data: [devices: settings?.testDevices, msgData: msgData, appId: app?.getId()], isStateChange: true, descriptionText: "Sending Message to ${settings?.testDevices}")
 }
 
 def installed() {
@@ -109,6 +112,7 @@ def updated() {
 
 def initialize() {
     subscribe(location, "pushoverManager", pushoverHandler)
+    sendLocationEvent(name: "pushoverManagerPoll", value: "poll", data: [empty: true], isStateChange: true, descriptionText: "Sending Device Poll to Pushover Manager")
 }
 
 def uninstalled() {
@@ -118,11 +122,10 @@ def uninstalled() {
 
 def pushoverHandler(evt) {
     if (!evt) return
-    log.debug "pushoverHandler: ${evt?.jsonData}"
+    // log.debug "pushoverHandler: ${evt?.jsonData}"
     switch (evt?.value) {
         case "refresh":
-            state?.pushSounds = evt?.jsonData?.sounds
-            state?.pushDevices = evt?.jsonData?.devices ?: []
+            state?.pushoverManagerData = [devices: evt?.jsonData?.devices ?: [], sounds: evt?.jsonData?.sounds ?: []]
             break
     }
 }
