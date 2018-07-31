@@ -90,8 +90,9 @@ def sendTestMessage() {
         url: "",
         url_title: "",
         timestamp: new Date().getTime(),
+        image: "https://community.hubitat.com/uploads/default/original/1X/f994d8c0dd92a7e88d22c5f84a633925f02d66e5.png"
     ]
-    sendLocationEvent(name: "pushoverManagerMsg", value: "send", data: [devices: settings?.testDevices, msgData: msgData, image: "https://community.hubitat.com/uploads/default/original/1X/f994d8c0dd92a7e88d22c5f84a633925f02d66e5.png"], isStateChange: true, descriptionText: "Sending Message to ${settings?.testDevices}")
+    sendLocationEvent(name: "pushoverManagerMsg", value: "send", data: [devices: settings?.testDevices, msgData: msgData], isStateChange: true, descriptionText: "Sending Message to ${settings?.testDevices}")
 }
 
 def installed() {
@@ -120,12 +121,8 @@ def pushoverHandler(evt) {
     log.debug "pushoverHandler: ${evt?.jsonData}"
     switch (evt?.value) {
         case "refresh":
-            List pushDevices = []
-            for(device in (evt?.jsonData && evt?.jsonData?.devices ? evt?.jsonData?.devices : [])) {
-                pushDevices?.push(device as String)
-            }
             state?.pushSounds = evt?.jsonData?.sounds
-            state?.pushDevices = pushDevices
+            state?.pushDevices = evt?.jsonData?.devices ?: []
             break
     }
 }

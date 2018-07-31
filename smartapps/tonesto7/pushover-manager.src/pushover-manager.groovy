@@ -314,8 +314,8 @@ def pushoverNotification(deviceName, msgData, imageData) {
             if(msgData?.timestamp) {
                 params?.body?.timestamp = msgData?.timestamp
             }
-            if(imageData) {
-                params?.body?.attachment = imageData
+            if(msgData?.image) {
+                params?.body?.attachment = msgData?.image
             }
             if ((settings?.apiKey =~ /[A-Za-z0-9]{30}/) && (settings?.userKey =~ /[A-Za-z0-9]{30}/)) {
                 try {
