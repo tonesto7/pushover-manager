@@ -67,7 +67,7 @@ def messageTest() {
     return dynamicPage(name: "messageTest", title: "Notification Test", install: false, uninstall: false) {
         section() {
             if(state?.testMessageSent == true) {
-                paragraph "Message Already Sent... Go Back to send again..."
+                paragraph title: "Oops", "Message Already Sent...\nGo Back to MainPage to Send again..."
             } else {
                 paragraph title: "Sending Message: ", "${settings?.testMessage}"
                 paragraph "to Device(s): ${settings?.testDevices}" 

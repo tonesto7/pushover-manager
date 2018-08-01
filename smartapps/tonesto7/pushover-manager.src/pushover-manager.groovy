@@ -152,6 +152,7 @@ def locMessageHandler(evt) {
         case "sendMsg":
             List pushDevices = []
             if (evt?.jsonData && evt?.jsonData?.devices && evt?.jsonData?.msgData?.size()) {
+                log.trace "locMessageHandler(sendMsg)"
                 evt?.jsonData?.devices?.each { nd->
                     pushoverNotification(nd as String, evt?.jsonData?.msgData)
                 }
@@ -256,7 +257,7 @@ def filterPriorityMsg(msg, msgPr) {
 }
 
 void pushoverNotification(deviceName, msgData) {
-    log.debug "pushoverNotification($deviceName, $msgData)"
+    // log.debug "pushoverNotification($deviceName, $msgData)"
     if(deviceName && msgData) {
         if(msgData?.message != null && msgData?.message?.length() > 0 && deviceName && settings?.apiKey && settings?.userKey) {
             def hasImage = (msgData?.image && msgData?.image?.url && msgData?.image?.type)
@@ -280,7 +281,6 @@ void pushoverNotification(deviceName, msgData) {
             if(msgData?.timestamp) { bodyItems?.timestamp = msgData?.timestamp }
             if(msgData?.html == true) { bodyItems?.html = 1 }
             
-            
             if(hasImage) {
                 String bodyStr = ""
                 bodyItems?.each { k, v ->
@@ -288,8 +288,13 @@ void pushoverNotification(deviceName, msgData) {
                     bodyStr += "Content-Disposition: form-data; name=\"${k}\"\r\n\r\n${v}\r\n"
                 }
                 if(msgData?.image && msgData?.image?.url && msgData?.image?.type) {
+                    def imgData = getFile(msgData?.image?.url, msgData?.image?.type)
+                    // log.debug "imgData: $imgData"
                     bodyStr += "------pushoverManagerApp\r\n"
-                    bodyStr += "Content-Disposition: form-data; name=\"attachment\"; filename=\"${msgData?.image?.name}\"\r\nContent-Type: ${msgData?.image?.type}\r\n\r\n\r\n${getFile(msgData?.image?.url, msgData?.image?.type)}"
+                    bodyStr += "Content-Disposition: form-data; name=\"attachment\"; filename=\"${msgData?.image?.name}\"\r\n"
+                    bodyStr += "Content-Type: ${msgData?.image?.type}\r\n"
+                    bodyStr += "Content-Transfer-Encoding: base64\r\n\r\n"
+                    bodyStr += "${imgData}"
                 }
                 bodyStr += "------pushoverManagerApp--"
                 body = bodyStr as String
@@ -299,10 +304,11 @@ void pushoverNotification(deviceName, msgData) {
             Map params = [
                 uri: "https://api.pushover.net/1/messages.json",
                 contentType: "multipart/form-data; boundary=----pushoverManagerApp",
-                body: body
+                body: body?.toString()
             ]
-            
-            // log.debug "params: $params"
+            // params?.each {
+            //     log.debug "$it"
+            // }
             try {
                 httpPost(params) { resp ->
                     def limit = resp?.getHeaders("X-Limit-App-Limit")
@@ -329,41 +335,21 @@ void pushoverNotification(deviceName, msgData) {
     }
 }
 
-def getFile(url, fileType, base64=false) {
+def getFile(url, fileType) {
     try {
-        def params = [uri: url, contentType: "$fileType"]
+        def params = [uri: url, requestContentType: "$fileType"]
         httpGet(params) { resp ->
-            if(resp?.status == 200) {
-                if(resp?.data) {
-                    Byte[] bytes = resp?.data?.getBytes()
-                    def size = resp?.getHeaders("Content-Length")
-                    if(size?.value && size?.value[0] && size?.value[0]?.isNumber()) {
-                        if(size?.value[0]?.toLong() > 2621440) {
-                            log.debug("FileSize: (${getFileSize(size?.value[0])})")
-                            log.warn "unable to encode file because it is larger than the 2.5MB size limit"
-                            return null
-                        }
-                    }
-                    if(!base64) { return bytes }
-                    String enc = bytes?.encodeBase64() as String
-                    return enc ? "data:${fileType};base64,${enc?.toString()}" : null
-                }
-            } else {
-                log.error("getFile Resp: ${resp?.status} ${url}")
-                return null
-            }
+            log.debug "success: ${resp?.isSuccess()}"
+            Byte[] bytes = resp?.data?.getBytes()
+            def data = resp?.getData() as String
+            def cls = resp?.getClass() as String
+            log.debug "data: $data"
+            log.debug "class: $cls"
+            String enc = bytes?.encodeBase64()
+            return enc ? "${enc?.toString()}" : null
         }
     } catch (ex) {
-        if(ex instanceof groovyx.net.http.ResponseParseException) {
-            if(ex?.statusCode != 200) {
-                log.error("getFile Resp: ${ex?.statusCode} ${url}")
-                log.error "getFile Exception:", ex
-            }
-        } else if(ex instanceof groovyx.net.http.HttpResponseException && ex?.response) {
-            log.error("getFile Resp: ${ex?.response?.status} ${url}")
-        } else {
-            log.error "getFile Exception:", ex
-        }
+        log.error "getFile Exception:", ex
         return null
     }
 }
