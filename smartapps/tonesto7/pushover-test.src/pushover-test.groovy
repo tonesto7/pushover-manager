@@ -69,8 +69,8 @@ def messageTest() {
             if(state?.testMessageSent == true) {
                 paragraph title: "Oops", "Message Already Sent...\nGo Back to MainPage to Send again..."
             } else {
-                paragraph title: "Sending Message: ", "${settings?.testMessage}"
-                paragraph "to Device(s): ${settings?.testDevices}" 
+                paragraph title: "Sending Message: ", "${settings?.testMessage}", state: "complete"
+                paragraph "Device(s): ${settings?.testDevices}" 
                 sendTestMessage()
             }
             state?.testMessageSent = true
