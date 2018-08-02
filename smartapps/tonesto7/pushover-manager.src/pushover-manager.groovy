@@ -15,8 +15,6 @@
  */
 
 import groovy.json.*
-import java.sql.Blob
-
 def appVer() {"v1.0.20180801"}
 
 definition(
@@ -171,13 +169,13 @@ def getValidated(devList=false){
         uri: "https://api.pushover.net/1/users/validate.json",
         contentType: "application/json",
         body: [
-            token: "$apiKey",
-            user: "$userKey",
+            token: settings?.apiKey?.trim(),
+            user: settings?.userKey?.trim(),
             device: ""
         ]
     ]
     def deviceOptions
-    if ((apiKey =~ /[A-Za-z0-9]{30}/) && (userKey =~ /[A-Za-z0-9]{30}/)) {
+    if ((settings?.apiKey?.trim() =~ /[A-Za-z0-9]{30}/) && (settings?.userKey?.trim() =~ /[A-Za-z0-9]{30}/)) {
         try {
             httpPost(params) { resp ->
                 // log.debug "response: ${resp.status}"
@@ -351,6 +349,14 @@ def getImageData(url, fileType) {
                             return null
                         }
                     }
+                    InputStream input = new ByteArrayInputStream(bytes);
+                    int data = input.read();
+                    while(data != -1) {
+                        //do something with data
+                        data = input.read();
+                    }
+                    input.close();
+                    log.debug "data: $data"
                     String enc = bytes?.encodeBase64() as String 
                     return enc ? "data:${fileType};base64,${enc?.toString()}" : null 
                 }

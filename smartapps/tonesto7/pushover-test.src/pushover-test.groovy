@@ -125,7 +125,9 @@ def pushoverHandler(evt) {
     // log.debug "pushoverHandler: ${evt?.jsonData}"
     switch (evt?.value) {
         case "refresh":
-            state?.pushoverManagerData = [devices: evt?.jsonData?.devices ?: [], sounds: evt?.jsonData?.sounds ?: []]
+            def devices = evt?.jsonData?.devices ?: []
+            def sounds = evt?.jsonData?.sounds ?: []
+            state?.pushoverManagerData = [devices: devices, sounds: sounds]
             break
     }
 }
