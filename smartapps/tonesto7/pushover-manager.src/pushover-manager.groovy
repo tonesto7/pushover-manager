@@ -16,7 +16,8 @@
  */
 
 import groovy.json.*
-def appVer() {"v1.0.20180806"}
+def appVer() { return "v1.0.0" }
+def appDate() { return "8-07-2018" }
 
 definition(
     name: "Pushover-Manager",
@@ -31,6 +32,10 @@ definition(
 
 preferences {
     page(name: "mainPage")
+    page(name: "authKeysPage")
+    page(name: "infoPage")
+    page(name: "getAppsPage")
+    page(name: "testMessagePage")
     page(name: "messageTest")
 }
 
@@ -39,48 +44,109 @@ def appInfoSect()	{
         def str = ""
         str += "${app?.name}"
         str += "\nVersion: ${appVer()}"
+        str += "\nModified: ${appDate()}"
         paragraph str, image: "https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/icon-512.png"
     }
 }
 
+String androidAppUrl() { return "https://pushover.net/clients/android" }
+String iosAppUrl() { return "https://pushover.net/clients/ios" }
+String desktopAppUrl() { return "https://pushover.net/clients/desktop" }
+String appViewUrl() { return "https://pushover.net/login?back_to=/apps" }
+String appRegisterUrl() { return "https://pushover.net/login?back_to=/apps/build" }
+String userLoginUrl() { return "https://pushover.net/login" }
+String costFaqUrl() { return "https://pushover.net/faq#overview-fees" }
+String faqUrl() { return "https://pushover.net/faq" }
+
 def mainPage() {
     return dynamicPage(name: "mainPage", title: "", install: true, uninstall: true) {
+        Boolean isInstalled = (state?.isInstalled == true)
         appInfoSect()
-        section("Name this Instance:") {
-            paragraph "This name will be used to help identify this install in 3rd Party apps."
-            label title: "Name this Config", required: true, defaultValue: "${app?.name}"
-        }
-        def validated = (apiKey && userKey && getValidated())
-        def devices = validated ? getValidated(true) : []
-        section("API Authentication: (${validated ? "Good" : "Missing"})", hidden: validated, hideable: true) {
-            input "apiKey", "text", title: "API Key:", description: "Pushover API Key", required: true, submitOnChange: true
-            input "userKey", "text", title: "User Key:", description: "Pushover User Key", required: true, submitOnChange: true
-        }
-        if(validated) {
-            section("Statistics:") {
-                def msgData = state?.messageData
-                def str = ""
-                def limit = msgData?.limit
-                def remain = msgData?.remain
-                def reset = msgData?.resetDt
-                str += remain || limit ? "Message Details (Month):" : ""
-                str += limit ? "\n • Limit: (${limit})" : ""
-                str += remain ? "\n • Remaining: (${remain})" : ""
-                str += (remain?.isNumber() && limit?.isNumber()) ? "\n • Used: (${(limit?.toLong() - remain?.toLong())})" : ""
-                paragraph str
+        if(isInstalled) {
+            def validated = (settings?.apiKey && settings?.userKey && getValidated())
+            def devices = validated ? getValidated(true) : []
+            section("Pushover API Authentication: (${validated ? "Good" : "Missing"})", hideable: true, hidden: validated) {
+                href "authKeysPage", title: "Authentication Keys", description: "Configure you Pushover Keys", state: (validated ? "complete" : null), required: true
             }
-            section("Clients:") {
-                def str = ""
-                devices?.each { cl-> str += "\n • ${cl}" }
-                paragraph title: "Pushover Clients:", (str != "" ? str : "No Clients Found..."), state: "complete"
-            }
-            section("Test Notifications:", hideable: true, hidden: true) {
-                input "testDevices", "enum", title: "Select Devices", description: "Select Devices to Send Test Notification Too...", multiple: true, required: false, options: devices, submitOnChange: true
-                if(settings?.testDevices) {
-                    input "testMessage", "text", title: "Test Message to Send:", description: "Enter message to send...", required: false, submitOnChange: true
-                    if(settings?.testMessage && settings?.testMessage?.length() > 0) {
-                        href "messageTest", title: "Send Message", description: ""
+            if(validated) {
+                if(state?.messageData?.size()) {
+                    section() {
+                        def msgData = state?.messageData
+                        def str = ""
+                        def limit = msgData?.limit
+                        def remain = msgData?.remain
+                        def reset = msgData?.resetDt
+                        str += limit ? "${str=="" ? "" : "\n"} • Limit: (${limit})" : ""
+                        str += remain ? "${str=="" ? "" : "\n"} • Remaining: (${remain})" : ""
+                        str += (remain?.isNumber() && limit?.isNumber()) ? "\n • Used: (${(limit?.toLong() - remain?.toLong())})" : ""
+                        paragraph title: "Pushover App Statistics (Month):", (str != "" ? str : "No data available"), state: (str != "" ? "complete" : null)
                     }
+                }
+                section() {
+                    def str = ""
+                    devices?.each { cl-> str += "${str=="" ? "" : "\n"} • ${cl}" }
+                    paragraph title: "Discovered Clients:", (str != "" ? str : "No Clients Found..."), state: "complete"
+                    href "testMessagePage", title: "Send a Test Message", description: ""
+                }
+            }
+            section("Pushover Clients:") {
+                href "getAppsPage", title: "Pushover Client Apps", description: ""
+            }
+            section("More Info:") {
+                href "infoPage", title: "More Information", description: ""
+            }
+            section("Name this App:") {
+                paragraph "This name is used to help identify this install in 3rd Party apps, and is especially important if you install this app multiple times for different App keys" 
+                label title: "App Name", required: true, defaultValue: "${app?.name}"
+            }
+        } else {
+            section() { paragraph title: "New install detected...", "1. Press Done to install the app\n2. Return to main screen\n3. Tap on Automations\n4. Tap on SmartApps tab\n5. Scroll and Tap on Pushover-Manager\n6. Complete App configuration process\n7. Press Done to Complete platform integration", state: "complete"}
+        }
+    }
+}
+
+def authKeysPage() {
+    return dynamicPage(name: "authKeysPage", title: "Pushover Authentication", install: false, uninstall: false) {
+        section() {
+            href url: userLoginUrl(), style: "embedded", title: "Create Pushover Account/Get User Key", description: "Tap here to Create a New Pushover Account and/or get your User Key.  Then copy/paste the User key into the input below.", state: "complete"
+            href url: appViewUrl(), style: "embedded", title: "Get Existing App Key", description: "Tap here to get your App Key.  Then copy/paste the App Key into the input below.", state: "complete"
+            href url: appRegisterUrl(), style: "embedded", title: "Create Pushover App", description: "Tap here to Create a New Pushover App and get your new App Key.  Then copy/paste the App Key into the input below.", state: "complete"
+        }
+        section() {
+            input "userKey", "text", title: "User Key:", description: "Pushover User Key", required: true, submitOnChange: true
+            input "apiKey", "text", title: "App Key:", description: "Pushover App Key", required: true, submitOnChange: true
+        }
+    }
+}
+
+def infoPage() {
+    return dynamicPage(name: "infoPage", title: "Information", install: false, uninstall: false) {
+        section() {
+            href url: costFaqUrl(), style: "embedded", title: "How much does this cost?", description: "Tap to open", state: "complete"
+            href url: faqUrl(), style: "embedded", title: "Frequently Asked Question?", description: "Tap to open", state: "complete"
+        }
+    }
+}
+
+def getAppsPage() {
+    return dynamicPage(name: "getAppsPage", title: "Get the Apps", install: false, uninstall: false) {
+        section() {
+            href url: androidAppUrl(), style: "external", title: "Android App", description: "Tap to open", state: "complete"
+            href url: iosAppUrl(), style: "external", title: "iPhone/iPad App", description: "Tap to open", state: "complete"
+            href url: desktopAppUrl(), style: "external", title: "Desktop (Browser) App", description: "Tap to open", state: "complete"
+        }
+    }
+}
+
+def testMessagePage() {
+    return dynamicPage(name: "testMessagePage", title: "Message Test Page", install: false, uninstall: false) {
+        section() {
+            input "testDevices", "enum", title: "Select Devices", description: "Select Devices to Send Message Too...", multiple: true, required: false, options: getDeviceList(), submitOnChange: true
+            if(settings?.testDevices) {
+                input "testSound", "enum", title: "Notification Sound:", description: "Select the Notification Sound", defaultValue: "pushover", required: false, multiple: false, submitOnChange: true, options: getSoundOptions()
+                input "testMessage", "text", title: "Test Message to Send:", description: "Enter message to send...", required: false, submitOnChange: true
+                if(settings?.testMessage && settings?.testMessage?.length() > 0) {
+                    href "messageTest", title: "Send Message", description: ""
                 }
             }
         }
@@ -88,37 +154,38 @@ def mainPage() {
     }
 }
 
-def isValidated() { }
-
-def getDeviceList() {
-    return (settings?.apiKey && settings?.userKey && getValidated()) ? getValidated(true) : []
-}
+def getDeviceList() { return (settings?.apiKey && settings?.userKey && getValidated()) ? getValidated(true) : [] }
 
 def messageTest() {
     return dynamicPage(name: "messageTest", title: "Notification Test", install: false, uninstall: false) {
         section() {
             if(state?.testMessageSent == true) {
-                paragraph "Message Already Sent... Go Back to send again..."
+                paragraph title: "Oops", "Message Already Sent...\nGo Back to MainPage to Send again..."
             } else {
-                paragraph "Sending ${settings?.testMessage} to ${settings?.testDevices}" 
-                sendTestMessage()
+                paragraph title: "Sending Message: ", "${settings?.testMessage}", state: "complete"
+                paragraph "Device(s): ${settings?.testDevices}" 
+                buildPushMessage(settings?.testDevices, app?.getLabel() + " Test", settings?.testMessage)
             }
             state?.testMessageSent = true
         }
     }
 }
 
-def sendTestMessage() {
-    app?.getChildDevices(true)?.each { dev->
-        if(dev?.getDeviceName()?.toString() in settings?.testDevices) {
-            log.debug "sending test message to ${dev?.displayName}"
-            dev?.deviceNotification(settings?.testMessage as String)
-        }
-    }
+private buildPushMessage(List devices, String title, String message) {
+    Map data = [:]
+    data?.appId = app?.getId()
+    data.devices = devices
+    data?.msgData = [title: title, message: message, priority: 0, sound: settings?.testSound]
+    sendTestMessage(devices, data)
+}  
+
+def sendTestMessage(devices, data) {
+    log.debug "Sending Test Message: (${data?.msgData?.message}) to Devices: ${devices}"
+    devices?.each { nd-> sendPushoverMessage(nd as String, data?.msgData)}
 }
 
 def installed() {
-    log.debug "Installed with settings: ${settings}"  
+    log.debug "Installed with settings: ${settings}"
     initialize()
 }
 
@@ -128,43 +195,48 @@ def updated() {
 }
 
 def initialize() {
+    state?.isInstalled = true
     unsubscribe()
     subscribe(location, "pushoverManagerMsg", locMessageHandler)
     subscribe(location, "pushoverManagerPoll", locMessageHandler)
-    sendDeviceListEvent()
-}
-
-def sendDeviceListEvent() {
-    log.trace "sendDeviceListEvent..."
-    sendLocationEvent(name: "pushoverManager", value: "refresh", data: [id: app?.getId(), devices: getDeviceList(), sounds: getSoundOptions(), appName: app?.getLabel()], isStateChange: true, descriptionText: "Pushover Manager Device List Refresh")
+    sendDeviceRefreshEvt()
 }
 
 def uninstalled() {
-    log.warn "Uninstalled called... Removing all Devices..."
-    addRemoveDevices(true)
-    sendLocationEvent(name: "pushoverManager", value: "reset", data: [], isStateChange: true, descriptionText: "Pushover Manager Device List Reset")
+    log.warn "Uninstalled called..."
+    sendDeviceResetEvt()
+}
+
+private sendDeviceRefreshEvt() {
+    log.info "Sending Pushover Device Refresh Event..."
+    sendLocationEvent(name: "pushoverManager", value: "refresh", data: [id: app?.getId(), devices: getDeviceList(), sounds: getSoundOptions(), appName: app?.getLabel()], isStateChange: true, descriptionText: "Pushover-Manager Device List Refresh")
+}
+
+private sendDeviceResetEvt() {
+    log.warn "Sending Pushover Device Reset Event..."
+    sendLocationEvent(name: "pushoverManager", value: "reset", data: [], isStateChange: true, descriptionText: "Pushover-Manager Device List Reset")
 }
 
 def locMessageHandler(evt) {
     log.debug "locMessageHandler: ${evt?.jsonData}"
     if (!evt) return
     if (!(settings?.apiKey =~ /[A-Za-z0-9]{30}/) && (settings?.userKey =~ /[A-Za-z0-9]{30}/)) {
-        log.error "API key '${apiKey}' or User key '${userKey}' is not properly formatted!"
+        log.error "API key '${settings?.apiKey}' or User key '${settings?.userKey}' is not properly formatted!"
         return 
     }
     switch (evt?.value) {
         case "sendMsg":
             List pushDevices = []
-            if (evt?.jsonData && evt?.jsonData?.id == app?.getId() && evt?.jsonData?.devices && evt?.jsonData?.msgData?.size()) {
+            if (evt?.jsonData && evt?.jsonData?.devices && evt?.jsonData?.msgData?.size()) {
                 log.trace "locMessageHandler(sendMsg)"
                 evt?.jsonData?.devices?.each { nd->
-                    pushoverNotification(nd as String, evt?.jsonData?.msgData)
+                    if(nd?.toString()?.contains(app?.getId() as String)) { sendPushoverMessage(nd as String, evt?.jsonData?.msgData) }
                 }
             }
             break
         case "poll":
             log.debug "locMessageHandler: poll()"
-            sendDeviceListEvent()
+            sendDeviceRefreshEvt()
             break
     }
 }
@@ -174,17 +246,12 @@ def getValidated(devList=false){
     def params = [
         uri: "https://api.pushover.net/1/users/validate.json",
         contentType: "application/json",
-        body: [
-            token: settings?.apiKey?.trim(),
-            user: settings?.userKey?.trim(),
-            device: ""
-        ]
+        body: [token: settings?.apiKey?.trim(), user: settings?.userKey?.trim(), device: ""]
     ]
     def deviceOptions
     if ((settings?.apiKey?.trim() =~ /[A-Za-z0-9]{30}/) && (settings?.userKey?.trim() =~ /[A-Za-z0-9]{30}/)) {
         try {
             httpPost(params) { resp ->
-                // log.debug "response: ${resp.status}"
                 if(resp?.status != 200) {
                     // sendPush("ERROR: 'Pushover Me When' received HTTP error ${resp?.status}. Check your keys!")
                     log.error "Received HTTP error ${resp.status}. Check your keys!"
@@ -199,7 +266,6 @@ def getValidated(devList=false){
                             state?.pushoverDevices = []
                         }
                     } else {
-                        // log.debug "Keys Validated..."
                         validated = true
                     }
                 }
@@ -212,7 +278,7 @@ def getValidated(devList=false){
             }
         } 
     } else {
-        log.error "API key '${apiKey}' or User key '${userKey}' is not properly formatted!"
+        log.error "API key '${settings?.apiKey}' or User key '${settings?.userKey}' is not properly formatted!"
     }
     return devList ? deviceOptions : validated
 }
@@ -223,16 +289,8 @@ def getSoundOptions() {
     try {
         httpGet(uri: "https://api.pushover.net/1/sounds.json?token=${settings?.apiKey}") { resp ->
             if(resp?.status == 200) {
-                // log.debug "Found (${resp?.data?.sounds?.size()}) Sounds..."
-                def mySounds = resp?.data?.sounds
-                // log.debug "mySounds: $mySounds"
-                mySounds?.each { snd->
-                    myOptions["${snd?.key}"] = snd?.value
-                }
-            } else {
-                // sendPush("ERROR: 'Pushover Me When' received HTTP error ${resp?.status}. Check your keys!")
-                log.error "Received HTTP error ${resp?.status}. Check your keys!"
-            }
+                resp?.data?.sounds?.each { snd-> myOptions["${snd?.key}"] = snd?.value }
+            } else { log.error "Received HTTP error ${resp?.status}. Check your keys!" }
         }
     } catch (Exception ex) {
         if(ex instanceof groovyx.net.http.HttpResponseException && ex?.response) {
@@ -262,8 +320,8 @@ def filterPriorityMsg(msg, msgPr) {
 
 include 'asynchttp_v1'
 
-void pushoverNotification(deviceName, msgData) {
-    // log.debug "pushoverNotification($deviceName, $msgData)"
+void sendPushoverMessage(deviceName, msgData) {
+    // log.debug "sendPushoverMessage($deviceName, $msgData)"
     if(deviceName && msgData) {
         if(msgData?.message != null && msgData?.message?.length() > 0 && deviceName && settings?.apiKey && settings?.userKey) {
             def hasImage = false//(msgData?.image && msgData?.image?.url && msgData?.image?.type)
