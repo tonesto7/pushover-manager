@@ -1,6 +1,7 @@
 /**
  *  Pushover-Manager
  *
+ *  Inspired by original work for SmartThings by: Dan Ogorchock, Stephan Hackett, and Zachary Priddy
  *  Copyright 2018 Anthony Santilli
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
@@ -15,9 +16,7 @@
  */
 
 import groovy.json.*
-import java.nio.charset.StandardCharsets;
-import java.nio.charset.Charset
-def appVer() {"v1.0.20180801"}
+def appVer() {"v1.0.20180806"}
 
 definition(
     name: "Pushover-Manager",
@@ -47,6 +46,10 @@ def appInfoSect()	{
 def mainPage() {
     return dynamicPage(name: "mainPage", title: "", install: true, uninstall: true) {
         appInfoSect()
+        section("Name this Instance:") {
+            paragraph "This name will be used to help identify this install in 3rd Party apps."
+            label title: "Name this Config", required: true, defaultValue: "${app?.name}"
+        }
         def validated = (apiKey && userKey && getValidated())
         def devices = validated ? getValidated(true) : []
         section("API Authentication: (${validated ? "Good" : "Missing"})", hidden: validated, hideable: true) {
@@ -133,12 +136,13 @@ def initialize() {
 
 def sendDeviceListEvent() {
     log.trace "sendDeviceListEvent..."
-    sendLocationEvent(name: "pushoverManager", value: "refresh", data: [devices: getDeviceList(), sounds: getSoundOptions()], isStateChange: true, descriptionText: "Pushover Manager Device List Refresh")
+    sendLocationEvent(name: "pushoverManager", value: "refresh", data: [id: app?.getId(), devices: getDeviceList(), sounds: getSoundOptions(), appName: app?.getLabel()], isStateChange: true, descriptionText: "Pushover Manager Device List Refresh")
 }
 
 def uninstalled() {
     log.warn "Uninstalled called... Removing all Devices..."
     addRemoveDevices(true)
+    sendLocationEvent(name: "pushoverManager", value: "reset", data: [], isStateChange: true, descriptionText: "Pushover Manager Device List Reset")
 }
 
 def locMessageHandler(evt) {
@@ -151,7 +155,7 @@ def locMessageHandler(evt) {
     switch (evt?.value) {
         case "sendMsg":
             List pushDevices = []
-            if (evt?.jsonData && evt?.jsonData?.devices && evt?.jsonData?.msgData?.size()) {
+            if (evt?.jsonData && evt?.jsonData?.id == app?.getId() && evt?.jsonData?.devices && evt?.jsonData?.msgData?.size()) {
                 log.trace "locMessageHandler(sendMsg)"
                 evt?.jsonData?.devices?.each { nd->
                     pushoverNotification(nd as String, evt?.jsonData?.msgData)
@@ -226,7 +230,7 @@ def getSoundOptions() {
                     myOptions["${snd?.key}"] = snd?.value
                 }
             } else {
-                sendPush("ERROR: 'Pushover Me When' received HTTP error ${resp?.status}. Check your keys!")
+                // sendPush("ERROR: 'Pushover Me When' received HTTP error ${resp?.status}. Check your keys!")
                 log.error "Received HTTP error ${resp?.status}. Check your keys!"
             }
         }
@@ -262,7 +266,7 @@ void pushoverNotification(deviceName, msgData) {
     // log.debug "pushoverNotification($deviceName, $msgData)"
     if(deviceName && msgData) {
         if(msgData?.message != null && msgData?.message?.length() > 0 && deviceName && settings?.apiKey && settings?.userKey) {
-            def hasImage = (msgData?.image && msgData?.image?.url && msgData?.image?.type)
+            def hasImage = false//(msgData?.image && msgData?.image?.url && msgData?.image?.type)
             def filtr = filterPriorityMsg(msgData?.message, msgData?.priority)
             String message = filtr?.msg
             String priority = filtr?.msgPr ?: "0"
@@ -285,7 +289,7 @@ void pushoverNotification(deviceName, msgData) {
             def test = false
             Map params = [uri: test ? "http://requestbin.fullcontact.com/r50ennr5" : "https://api.pushover.net/1/messages.json"]
             String imgStr = hasImage ? getImageData(msgData?.image?.url, msgData?.image?.type) as String : null
-            log.debug "imgStr length: ${imgStr != null ? "${imgStr?.toString()?.length()}" : "null"}"
+            // log.debug "imgStr length: ${imgStr != null ? "${imgStr?.toString()?.length()}" : "null"}"
             if(hasImage && imgStr) {
                 imgStr = new JsonOutput().toJson(imgStr) as String
                 imgStr = imgStr.replaceFirst("\"","")
