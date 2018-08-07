@@ -1,0 +1,34 @@
+{
+    "namespace": "tonesto7",
+    "repoOwner": "tonesto7",
+    "repoName": "pushover-manager",
+    "repoBranch": "master",
+    "name": "Pushover Manager",
+    "author": "Anthony S.",
+    "description": "Location Event based Pushover Message Manager",
+    "category": "My Apps",
+    "bannerUrl": "",
+    "forumUrl": "https://community.smartthings.com/t/release-pushover-manager/",
+    "docUrl": "http://thingsthataresmart.wiki/index.php?title=Pushover_Manager",
+    "releaseType": "production",
+    "keywords": [
+        "pushover",
+        "notification",
+        "push",
+        "alerts"
+    ],
+    "notes": "Nothing to show here (yet)",
+    "smartApps": {
+        "parent": {
+            "name": "Pushover Manager",
+            "iconUrl": "https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/icon-72.png",
+            "published": true,
+            "oAuth": false,
+            "version": "1.0.0",
+            "appSettings": {},
+            "appUrl": "smartapps/tonesto7/pushover-manager.src/pushover-manager.groovy"
+        },
+        "children": []
+    },
+    "deviceHandlers": []
+}

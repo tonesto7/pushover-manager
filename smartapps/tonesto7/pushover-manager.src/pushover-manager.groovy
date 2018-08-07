@@ -1,5 +1,5 @@
 /**
- *  Pushover-Manager
+ *  Pushover Manager
  *
  *  Inspired by original work for SmartThings by: Dan Ogorchock, Stephan Hackett, and Zachary Priddy
  *  Copyright 2018 Anthony Santilli
@@ -20,10 +20,10 @@ def appVer() { return "v1.0.0" }
 def appDate() { return "8-07-2018" }
 
 definition(
-    name: "Pushover-Manager",
+    name: "Pushover Manager",
     namespace: "tonesto7",
     author: "Anthony Santilli",
-    description: "Creates and Manages Pushover devices",
+    description: "Location Event based Pushover Message Manager",
     category: "My Apps",
     iconUrl: "https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/icon-72.png",
     iconX2Url: "https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/icon-256.png",
@@ -217,13 +217,25 @@ private sendDeviceResetEvt() {
     sendLocationEvent(name: "pushoverManager", value: "reset", data: [], isStateChange: true, descriptionText: "Pushover-Manager Device List Reset")
 }
 
+Boolean userKeyOk() {
+    if(!(settings?.userKey?.trim() =~ /[A-Za-z0-9]{30}/)) {
+        log.error "User key '${settings?.userKey}' is missing or not properly formatted!"
+        return false
+    }
+    return true
+}
+Boolean apiKeyOk() {
+    if(!(settings?.apiKey?.trim() =~ /[A-Za-z0-9]{30}/)) {
+        log.error "API Key '${settings?.apiKey}' is missing or not properly formatted!"
+        return false
+    }
+    return true
+}
+
 def locMessageHandler(evt) {
     log.debug "locMessageHandler: ${evt?.jsonData}"
     if (!evt) return
-    if (!(settings?.apiKey =~ /[A-Za-z0-9]{30}/) && (settings?.userKey =~ /[A-Za-z0-9]{30}/)) {
-        log.error "API key '${settings?.apiKey}' or User key '${settings?.userKey}' is not properly formatted!"
-        return 
-    }
+    if (!apiKeyOk() || !userKeyOk()) { return }
     switch (evt?.value) {
         case "sendMsg":
             List pushDevices = []
@@ -249,43 +261,41 @@ def getValidated(devList=false){
         body: [token: settings?.apiKey?.trim(), user: settings?.userKey?.trim(), device: ""]
     ]
     def deviceOptions
-    if ((settings?.apiKey?.trim() =~ /[A-Za-z0-9]{30}/) && (settings?.userKey?.trim() =~ /[A-Za-z0-9]{30}/)) {
-        try {
-            httpPost(params) { resp ->
-                if(resp?.status != 200) {
-                    // sendPush("ERROR: 'Pushover Me When' received HTTP error ${resp?.status}. Check your keys!")
-                    log.error "Received HTTP error ${resp.status}. Check your keys!"
-                } else {
-                    if(devList) {
-                        if(resp?.data && resp?.data?.devices) {
-                            // log.debug "Found (${resp?.data?.devices?.size()}) Pushover Devices..."
-                            deviceOptions = resp?.data?.devices
-                            state?.pushoverDevices = resp?.data?.devices
-                        } else { 
-                            log.error "Device List is empty"
-                            state?.pushoverDevices = []
-                        }
-                    } else {
-                        validated = true
+    if (!apiKeyOk() || !userKeyOk()) { return }
+    try {
+        httpPost(params) { resp ->
+            if(resp?.status != 200) {
+                // sendPush("ERROR: 'Pushover Me When' received HTTP error ${resp?.status}. Check your keys!")
+                log.error "Received HTTP error ${resp.status}. Check your keys!"
+            } else {
+                if(devList) {
+                    if(resp?.data && resp?.data?.devices) {
+                        // log.debug "Found (${resp?.data?.devices?.size()}) Pushover Devices..."
+                        deviceOptions = resp?.data?.devices
+                        state?.pushoverDevices = resp?.data?.devices
+                    } else { 
+                        log.error "Device List is empty"
+                        state?.pushoverDevices = []
                     }
+                } else {
+                    validated = true
                 }
             }
-        } catch (Exception ex) {
-            if(ex instanceof groovyx.net.http.HttpResponseException && ex?.response) {
-                log.error "getValidated() HttpResponseException | Status: (${ex?.response?.status}) | Data: ${ex?.response?.data}"
-            } else {
-                log.error "An invalid key was probably entered. PushOver Server Returned: ${ex}"
-            }
-        } 
-    } else {
-        log.error "API key '${settings?.apiKey}' or User key '${settings?.userKey}' is not properly formatted!"
-    }
+        }
+    } catch (Exception ex) {
+        if(ex instanceof groovyx.net.http.HttpResponseException && ex?.response) {
+            log.error "getValidated() HttpResponseException | Status: (${ex?.response?.status}) | Data: ${ex?.response?.data}"
+        } else {
+            log.error "An invalid key was probably entered. PushOver Server Returned: ${ex}"
+        }
+    } 
     return devList ? deviceOptions : validated
 }
 
 def getSoundOptions() {
     // log.debug "Generating Sound Notification List..."
     def myOptions = [:]
+    if(!apiKeyOk()) { return myOptions }
     try {
         httpGet(uri: "https://api.pushover.net/1/sounds.json?token=${settings?.apiKey}") { resp ->
             if(resp?.status == 200) {
@@ -297,7 +307,6 @@ def getSoundOptions() {
             log.error "getSoundOptions() HttpResponseException | Status: (${ex?.response?.status}) | Data: ${ex?.response?.data}"
         }
     }
-    state?.soundOptions = myOptions
     return myOptions
 }
 
@@ -323,7 +332,7 @@ include 'asynchttp_v1'
 void sendPushoverMessage(deviceName, msgData) {
     // log.debug "sendPushoverMessage($deviceName, $msgData)"
     if(deviceName && msgData) {
-        if(msgData?.message != null && msgData?.message?.length() > 0 && deviceName && settings?.apiKey && settings?.userKey) {
+        if(msgData?.message != null && msgData?.message?.length() > 0 && deviceName && apiKeyOk() && userKeyOk()) {
             def hasImage = false//(msgData?.image && msgData?.image?.url && msgData?.image?.type)
             def filtr = filterPriorityMsg(msgData?.message, msgData?.priority)
             String message = filtr?.msg
