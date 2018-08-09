@@ -1,12 +1,5 @@
-
-[logo]: https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/icon-72.png "Pushover logo"
-
-
-[NewSmartApp]: https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-NewSmartApp.png "NewSmartApp.png"
-[NewSmartAppCreate]: https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-NewSmartAppCreate.png "NewSmartAppCreate.png"
-
 # Pushover-Manager
-![][logo]
+![][https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/icon-72.png "Pushover logo"]
 
 ## Important Note
 
@@ -33,10 +26,10 @@ It was designed in the wake of SmartThings removing support for ContactBook whic
 ||
 
 -----------
-## Open Source License/Trademarks 
+## Open Source License/Trademarks
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use **Pushover Manager** code except in compliance with the License. You may obtain a copy of the License at:
-  
+
 <http://www.apache.org/licenses/LICENSE-2.0>
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
@@ -86,11 +79,11 @@ While on the GitHub site, find the **Raw** button and click it. This will bring 
 
 - Find the button on this page labeled **+New SmartApp** and click it.
 
-    ![][NewSmartApp]
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-NewSmartApp.png "NewSmartApp.png")
 
 - Since you already have the code in your computer’s clipboard, find the tab along the top section called **From Code**. In the area provided, paste (typically ***CTRL+V***) the code you copied from GitHub. Click **Create** in the bottom left corner of the page.
 
-    ![][NewSmartAppCreate]
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-NewSmartAppCreate.png "NewSmartAppCreate.png")
 
 - This will bring up another page, with the code now formatted within the IDE. If the code was copied correctly, there are no other steps except to save and publish the code. In the upper right corner of the page, find and click **Save**. Now, click **Publish (For Me)**, and you should receive a confirmation that the code has been published successfully.
 
@@ -141,7 +134,7 @@ Once you finished following the installation procedure above you will need to ac
 
 - Tap on the "**Automation**" Tap at the Bottom of the page and select "**SmartApps**" tab
 - Scroll down and Select "**Pushover Manager**" from the list.
-    
+
     ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/SmartAppList.png "SmartAppList.png")
 
 - You will see this page on your screen:
@@ -150,7 +143,7 @@ Once you finished following the installation procedure above you will need to ac
 
 - Tap on "**Configure your Pushover Keys**"
 - Use the appropriate inputs to get both your User/Group Key and App Keys
-    
+
     ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/AppAuthPage.png "AppAuthPage.png")
 - Copy/Paste each key into the inputs at the bottom of the page
 - Tap on "**Done**"
@@ -200,10 +193,10 @@ private buildPushMessage(List devices,Map msgData,timeStamp=false){if(!devices||
 ```groovy
 input ("pushoverEnabled", "bool", title: "Use Pushover Integration", required: false, submitOnChange: true)
 if(settings?.pushoverEnabled == true) {
-    if(!state?.pushoverManagerData) { 
+    if(!state?.pushoverManagerData) {
         if(state?.isInstalled) {
             paragraph "If this is your first time enabling Pushover leave this page and come back so the pushover devices can be populated"
-            pushover_init() 
+            pushover_init()
         } else { paragraph "Please complete the SmartApp install and configure later."}
     }
     input "pushoverDevices", "enum", title: "Select Pushover Devices", description: "Tap to select", groupedOptions: getPushoverDevices(), multiple: true, required: true, submitOnChange: true
@@ -248,7 +241,7 @@ def sendPushoverMessage() {
         priority: 0,  //Optional
         retry: 30, //Requried only when sending with High-Priority
         expire: 10800, //Requried only when sending with High-Priority
-        sound: settings?.pushoverSound, //Optional 
+        sound: settings?.pushoverSound, //Optional
         url: "https://www.foreverbride.com/files/6414/7527/3346/test.png", //Optional
         url_title: "Test Image" //Optional
     ]
