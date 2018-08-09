@@ -159,9 +159,9 @@ Once you finished following the installation procedure above you will need to ac
 - [NST Manager](https://community.smartthings.com/t/release-nst-manager-v5-0/)
 
 -------------
-## Developers: Adding Pushover Manager Support to your SmartApps
+## Developers: Adding Support for Pushover Manager to your SmartApps
 
-### Demo SmartApp
+### Pushover Integration Demo SmartApp
 - [Pushover Integration Demo SmartApp](https://github.com/tonesto7/pushover-manager/blob/master/smartapps/tonesto7/pushover-integration-demo.src/pushover-integration-demo.groovy)
 
 

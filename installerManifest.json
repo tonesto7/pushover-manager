@@ -28,7 +28,16 @@
             "appSettings": {},
             "appUrl": "smartapps/tonesto7/pushover-manager.src/pushover-manager.groovy"
         },
-        "children": []
+        "children": [{
+            "name": "Pushover Integration Demo",
+            "iconUrl": "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience@2x.png",
+            "published": true,
+            "oAuth": false,
+            "version": "1.0.0",
+            "appSettings": {},
+            "appUrl": "smartapps/tonesto7/pushover-integration-demo.src/pushover-integration-demo.groovy",
+            "optional": true
+        }]
     },
     "deviceHandlers": []
 }
