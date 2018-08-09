@@ -1,5 +1,5 @@
 # Pushover-Manager
-![][https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/icon-72.png "Pushover logo"]
+![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/icon-72.png "Pushover logo")
 
 ## Important Note
 
