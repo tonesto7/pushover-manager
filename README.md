@@ -1,11 +1,12 @@
 **Pushover-Manager**
 
-And since this is run by the community, by the community, new applications or device will show up as more and more people discover the power of SmartThings.
+![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/icon-72.png "https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/icon-72.png")
 
 Summary
 -------
 
-![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/icon-72.png "https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/icon-72.png")
+Pushover Manager is a SmartThings SmartApp that allows you to expose your Pushover devices to any 3rd-Party SmartApp that adds support for the locationEvents this SmartApp uses to Send customizable rich push notifications.
+It was designed in the wake of SmartThings removing support for ContactBook which allowed selecting specific users to receive certain push notifications.
 
 **Category:** My Apps
 
@@ -155,16 +156,9 @@ At the bottom of the information page for each application you will have the abi
 
 The installation will handle adding the SmartApp and/or devices to your SmartThings IDE, and even add the links (if available) to sync the developer's GitHub with your SmartThings IDE. Finally, if the application required OAuth to be enabled the installer will do that as well as publishing the application (it the author deemed it necessary).
 
-Security
---------
 
-Security is at the backbone of the **Community Installer (Free Marketplace)**. While you are required to log in to SmartThings to integrate this program, no information about your account or IDE is revealed to anyone.
 
-![](CI-Refresh.png "fig:CI-Refresh.png")![](CI-AuthExpire.png "fig:CI-AuthExpire.png")
-
-In addition if you leave your the **Community Installer (Free Marketplace)** open and go to other screens on your mobile device you may be required to refresh the page or even log back in. This is to ensure the security of your environment.
-
-Current Featured Apps
+Community SmartApps with Pushover Manager Integration
 ---------------------
 - [NST Manager](https://community.smartthings.com/t/release-nst-manager-v5-0/)
 
