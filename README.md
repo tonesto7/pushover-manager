@@ -22,7 +22,7 @@ Summary
 |**Pushover Manager**|*1.0.0*|<https://raw.githubusercontent.com/tonesto7/pushover-manager/master/smartapps/tonesto7/pushover-manager.src/pushover-manager.groovy>|
 ||
 
-### Open Source License/Trademarks
+### Open Source License/Trademarks 
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use **Pushover Manager** code except in compliance with the License. You may obtain a copy of the License at:
 
@@ -44,7 +44,7 @@ The following are the basic requirements to use **Pushover Manager**:
 -   A community SmartApp with Pushover Manager Support
 
 Privacy/Usage Statement
------------------------
+----------------------- 
 
 The authors of this application will not be responsible for any damages that may occur as a result of any missed Notifications.
 
@@ -59,26 +59,25 @@ The code for the SmartThings SmartApp is found on the GitHub site:
 
 While on the GitHub site, find the **Raw** button and click it. This will bring up a non-formatted page with just the code present. Select all of the code (typically CTRL+A) and copy It (typically CTRL+C).
 
-![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/GitHub.png "GitHub.png")
+![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-GitHub.png "GitHub.png")
 
 -   Next, point your browser to you SmartThings IDE for your country (https://account.smartthings.com/login) and **Log In**.
 
-![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/loginscreen.jpg "loginscreen.jpg")
+![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-Loginscreen.jpg "loginscreen.jpg")
 
 -   Once you are logged in, find the **My SmartApps** link on the top of the page. Clicking **My SmartApps** will allow you to produce a new SmartApp.
 
-![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/MySmartApps.png "MySmartApps.png")
+![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-MySmartApps.png "MySmartApps.png")
 
 -   Find the button on this page labeled **+New SmartApp** and click it.
 
-![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/+NewSmartApp.png "+NewSmartApp.png")
+![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-NewSmartApp.png "NewSmartApp.png")
 
 -   Since you already have the code in your computer’s clipboard, find the tab along the top section called **From Code**. In the area provided, paste (typically CTRL+V) the code you copied from GitHub. Click **Create** in the bottom left corner of the page.
 
-![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/NewSmartAppCreate.png "NewSmartAppCreate.png")
+![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-NewSmartAppCreate.png "NewSmartAppCreate.png")
 
--   This will bring up another page, with the code now formatted within the IDE. If the code was copied correctly, there are no other steps except to save and publish the code. In the upper right corner of the page, find and click **Save**. Now, click **Publish (For Me)**, and you should receive a confirmation that the code has been published successfully.
-
+-    This will bring up another page, with the code now formatted within the IDE. If the code was copied correctly, there are no other steps except to save and publish the code. In the upper right corner of the page, find and click **Save**. Now, click **Publish (For Me)**, and you should receive a confirmation that the code has been published successfully.
 ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/SavePublish.png "SavePublish.png")
 
 ### Advanced Installation
@@ -88,14 +87,13 @@ For advanced users who have their SmartThings IDE integrated with GitHub, the in
 Once you have integration, the code you need will be available to you to download and keep in sync with the latest versions.
 
 -   First, find the **Settings** button at the top of your SmartThings IDE page (this will only appear after you integrate with GitHub)
-
 ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/IdeSettings.jpg "IdeSettings.jpg")
 
 -   Clicking this button will open the GitHub Repository Integration page. To find the **Pushover Manager** SmartApp code, enter the information as you see it below:
 
-|**Owner**|**Name**|**Branch**|
-|---------|--------|----------|
-|tonesto7|pushover-manager|master|
+    |**Owner**|**Name**|**Branch**|
+    |---------|--------|----------|
+    |tonesto7|pushover-manager|master|
 
 ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/CI-IDELink.png "CI-IDELink.png")
 
@@ -108,7 +106,7 @@ Usage
 
 Once in follow the installation procedure above, along with enabling OAuth, you will be presented with the following screen:
 
-![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/CI-OpenScreen.png "CI-OpenScreen.png")
+![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/250px-CI-OpenScreen.png "CI-OpenScreen.png")
 
 On this page you will be required to choose your specific login to the SmartThings environment. Valid choices are either **SmartThings** or **Samsung**.
 
@@ -124,7 +122,7 @@ Once selected, tap \<<Installer Home>\>\> and you will be prompted to login to t
 
 Once you successfully login, you will see the main home page:
 
-![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/CI-Home.png "CI-Home.png")
+![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/250px-CI-Home.png "CI-Home.png")
 
 Here, you can scroll through the available applications submitted to be included with **Community Installer (Free Marketplace)**. Please note not all available SmartThings developers submit their applications through this installer; if you are a developer and wish to include your SmartApp here, please see the section [Community\_Installer\_(Free\_Marketplace)\#Developers:\_How\_To\_Add\_Your\_Apps\_To\_Community\_Installer](Community_Installer_(Free_Marketplace)#Developers:_How_To_Add_Your_Apps_To_Community_Installer "wikilink")
 
