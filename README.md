@@ -8,7 +8,10 @@
 # Pushover-Manager
 ![][logo]
 
+## Important Note
 
+**This app by itself is basically useless!!!  
+It requires other community apps to make use of it by using the required locationEvents.**
 
 ## Summary
 
