@@ -170,8 +170,8 @@ Once you finished following the installation procedure above you will need to ac
 
 ```groovy
 //PushOver-Manager Input Generation Functions
-private getPushoverSounds(){return (Map) state?.pushoverManagerData?.sounds?:[:]}
-private getPushoverDevices(){List opts=[];Map pd=state?.pushoverManagerData?:[:];pd?.apps?.each{k,v->if(v&&v?.devices&&v?.appId){Map dm=[:];v?.devices?.sort{}?.each{i->dm["${i}_${v?.appId}"]=i};addInputGrp(opts,v?.appName,dm);}};return opts;}
+private getPushoverSounds(){return (Map) atomicState?.pushoverManagerData?.sounds?:[:]}
+private getPushoverDevices(){List opts=[];Map pd=atomicState?.pushoverManagerData?:[:];pd?.apps?.each{k,v->if(v&&v?.devices&&v?.appId){Map dm=[:];v?.devices?.sort{}?.each{i->dm["${i}_${v?.appId}"]=i};addInputGrp(opts,v?.appName,dm);}};return opts;}
 private inputOptGrp(List groups,String title){def group=[values:[],order:groups?.size()];group?.title=title?:"";groups<<group;return groups;}
 private addInputValues(List groups,String key,String value){def lg=groups[-1];lg["values"]<<[key:key,value:value,order:lg["values"]?.size()];return groups;}
 private listToMap(List original){original.inject([:]){r,v->r[v]=v;return r;}}
@@ -183,8 +183,7 @@ public pushover_init(){subscribe(location,"pushoverManager",pushover_handler);pu
 public pushover_cleanup(){state?.remove("pushoverManagerData");unsubscribe("pushoverManager");}
 public pushover_poll(){sendLocationEvent(name:"pushoverManagerPoll",value:"poll",data:[empty:true],isStateChange:true,descriptionText:"Sending Poll Event to Pushover-Manager")}
 public pushover_msg(List devs,Map data){if(devs&&data){sendLocationEvent(name:"pushoverManagerMsg",value:"sendMsg",data:data,isStateChange:true,descriptionText:"Sending Message to Pushover Devices: ${devs}");}}
-public pushover_handler(evt){switch(evt?.value){case"refresh":Map pD=state?.pushoverManagerData?:[:];pD?.apps=[:];pD?.apps["${evt?.jsonData?.id}"]=[:];pD?.apps["${evt?.jsonData?.id}"]?.devices=evt?.jsonData?.devices?:[];pD?.apps["${evt?.jsonData?.id}"]?.appName=evt?.jsonData?.appName;pD?.apps["${evt?.jsonData?.id}"]?.appId=evt?.jsonData?.id;pD?.sounds=evt?.jsonData?.sounds?:[];state?.pushoverManagerData=pD;break;case "reset":state?.pushoverManagerData=[:];break;}}
-
+public pushover_handler(evt){switch(evt?.value){case"refresh":Map pD=atomicState?.pushoverManagerData?:[:];pD?.apps=[:];if(evt?.jsonData?.id){pD?.apps["${evt?.jsonData?.id}"]=[:];pD?.apps["${evt?.jsonData?.id}"]?.devices=evt?.jsonData?.devices?:[];pD?.apps["${evt?.jsonData?.id}"]?.appName=evt?.jsonData?.appName;pD?.apps["${evt?.jsonData?.id}"]?.appId=evt?.jsonData?.id;};pD?.sounds=evt?.jsonData?.sounds?:[];atomicState?.pushoverManagerData=pD;break;case "reset":atomicState?.pushoverManagerData=[:];break;}}
 //Builds Map Message object to send to Pushover Manager
 private buildPushMessage(List devices,Map msgData,timeStamp=false){if(!devices||!msgData){return};Map data=[:];data?.appId=app?.getId();data.devices=devices;data?.msgData=msgData;if(timeStamp){data?.msgData?.timeStamp=new Date().getTime()};pushover_msg(devices,data);}
 ```
@@ -192,17 +191,25 @@ private buildPushMessage(List devices,Map msgData,timeStamp=false){if(!devices||
 ### Example Code: Adding Device Input to Select Pushover Devices and Notification Sound
 ```groovy
 input ("pushoverEnabled", "bool", title: "Use Pushover Integration", required: false, submitOnChange: true)
-if(settings?.pushoverEnabled == true) {
-    if(!state?.pushoverManagerData) {
-        if(state?.isInstalled) {
-            paragraph "If this is your first time enabling Pushover leave this page and come back so the pushover devices can be populated"
-            pushover_init()
-        } else { paragraph "Please complete the SmartApp install and configure later."}
-    }
-    input "pushoverDevices", "enum", title: "Select Pushover Devices", description: "Tap to select", groupedOptions: getPushoverDevices(), multiple: true, required: true, submitOnChange: true
-    if(settings?.pushoverDevices) {
-        input "pushoverSound", "enum", title: "Notification Sound (Optional)", description: "Tap to select", defaultValue: "pushover", required: false, multiple: false, submitOnChange: true, options: getPushoverSounds()
-    }
+if(state?.isInstalled) {
+    if(settings?.pushoverEnabled == true) {
+        if(!atomicState?.pushoverManagerData) {
+            section() {
+                paragraph "If this is your first time enabling Pushover leave this page and come back so the pushover devices can be populated"
+                pushover_init()
+            }
+        }
+        section("Test Notifications:") {
+            input "pushoverDevices", "enum", title: "Select Pushover Devices", description: "Tap to select", groupedOptions: getPushoverDevices(), multiple: true, required: false, submitOnChange: true
+            if(settings?.pushoverDevices) {
+                input "pushoverSound", "enum", title: "Notification Sound (Optional)", description: "Tap to select", defaultValue: "pushover", required: false, multiple: false, submitOnChange: true, options: getPushoverSounds()
+                input "testMessage", "text", title: "Message to Send:", description: "Enter message to send...", required: false, submitOnChange: true
+                if(settings?.testMessage && settings?.testMessage?.length() > 0) {
+                    href "sendMessagePage", title: "Send Message", description: ""
+                }
+            }
+        }
+    } else { section() { paragraph "New Install Detected!!!\n\n1. Press Done to Finish the Install.\n2. Goto the Automations Tab at the Bottom\n3. Tap on the SmartApps Tab above\n4. Select ${app?.getLabel()} and Resume configuration", state: "complete" } }
 }
 ```
 - ***INFO***: By using the groupedOptions: parameter over options: this allows support for multiple Pushover-Manager SmartApp installs each with different user keys and devices.  So it groups the devices by the pushover manager SmartApp label in one list.
