@@ -123,7 +123,7 @@ Once you finished following the installation procedure above you will need to ac
 
 - Open the SmartThings Mobile App (It is important to use the Classic app, as we have reports the new mobile app does not play well with custom SmartApps):
 - Go to "**Marketplace**" and select "**SmartApps**" tab.
-- Marketplace is the "building", "star" or "sunlight" icon second from the right at the bottom of the mobile app
+- Marketplace is the "building" icon second from the right at the bottom of the mobile app
 - Scroll to the bottom of the list, select"**My Apps**"
 - Select"**Pushover Manager**" from the list.
 - You will see this page on your screen:
@@ -138,6 +138,9 @@ Once you finished following the installation procedure above you will need to ac
 
 - Tap on the "**Automation**" Tap at the Bottom of the page and select "**SmartApps**" tab
 - Scroll down and Select "**Pushover Manager**" from the list.
+    
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/SmartAppList.png "SmartAppList.png")
+
 - You will see this page on your screen:
 
     ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/AppHomeAuth.png "AppHomeAuth.png")
