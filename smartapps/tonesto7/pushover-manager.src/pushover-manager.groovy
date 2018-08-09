@@ -211,7 +211,7 @@ def uninstalled() {
 
 private sendDeviceRefreshEvt() {
     log.info "Sending Pushover Device Refresh Event..."
-    sendLocationEvent(name: "pushoverManager", value: "refresh", data: [id: app?.getId(), devices: getDeviceList(), sounds: getSoundOptions(), appName: app?.getLabel()], isStateChange: true, descriptionText: "Pushover-Manager Device List Refresh")
+    sendLocationEvent(name: "pushoverManager", value: "refresh", data: [appId: app?.getId(), devices: getDeviceList(), sounds: getSoundOptions(), appName: app?.getLabel()], isStateChange: true, descriptionText: "Pushover-Manager Device List Refresh")
 }
 
 private sendDeviceResetEvt() {
