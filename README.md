@@ -1,32 +1,38 @@
-**Pushover-Manager**
 
-![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/icon-72.png "https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/icon-72.png")
+[logo]: https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/icon-72.png "Pushover logo"
 
-Summary
--------
+
+[NewSmartApp]: https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-NewSmartApp.png "NewSmartApp.png"
+[NewSmartAppCreate]: https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-NewSmartAppCreate.png "NewSmartAppCreate.png"
+
+# Pushover-Manager
+![][logo]
+
+
+
+## Summary
 
 Pushover Manager is a SmartThings SmartApp that allows you to expose your Pushover devices to any 3rd-Party SmartApp that adds support for the locationEvents this SmartApp uses to Send customizable rich push notifications.
 It was designed in the wake of SmartThings removing support for ContactBook which allowed selecting specific users to receive certain push notifications.
 
-**Category:** My Apps
+***Category:*** My Apps
 
-**Author**: Anthony Santilli
+***Author***: Anthony Santilli
 
-**ST Community handle**: <https://community.smartthings.com/u/tonesto7/summary>
+***ST Community handle***: <https://community.smartthings.com/u/tonesto7/summary>
 
-
-### Latest Versions
+-----------
+## Latest Versions
 
 |**Application**|**Version**|**Location**|
 |---------------|-----------|------------|
 |**Pushover Manager**|*1.0.0*|<https://raw.githubusercontent.com/tonesto7/pushover-manager/master/smartapps/tonesto7/pushover-manager.src/pushover-manager.groovy>|
 ||
 
-### Open Source License/Trademarks 
+-----------
+## Open Source License/Trademarks 
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use **Pushover Manager** code except in compliance with the License. You may obtain a copy of the License at:
-
-  
   
 <http://www.apache.org/licenses/LICENSE-2.0>
 
@@ -34,24 +40,23 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
 All product and company names are trademarks™ or registered® trademarks of their respective holders. Use of them does not imply any affiliation with or endorsement by them.
 
-Requirements
 ------------
+## Requirements
 
 The following are the basic requirements to use **Pushover Manager**:
+- A mobile device running the SmartThings Classic mobile application
+- Access to your SmartThings IDE
+- A community SmartApp with Pushover Manager Support
 
--   A mobile device running the SmartThings Classic mobile application
--   Access to your SmartThings IDE
--   A community SmartApp with Pushover Manager Support
-
-Privacy/Usage Statement
------------------------ 
+-------------
+## Privacy/Usage Statement
 
 The authors of this application will not be responsible for any damages that may occur as a result of any missed Notifications.
 
 **Use Pushover Manager at your own risk!**
 
-Installation
-------------
+-------------
+## App Code Installation
 
 ### Automated Installer (Highly Recommended)
 This is the simplest way to Install Pushover Manager as well as other community apps
@@ -63,7 +68,7 @@ Please visit here for more info: [Things That Are Smart Wiki: SmartThings Commun
 The code for the SmartThings SmartApp is found on the GitHub site:
 [https://raw.githubusercontent.com/tonesto7/pushover-manager/master/smartapps/tonesto7/pushover-manager.src/pushover-manager.groovy`](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/smartapps/tonesto7/pushover-manager.src/pushover-manager.groovy)
 
-While on the GitHub site, find the **Raw** button and click it. This will bring up a non-formatted page with just the code present. Select all of the code (typically CTRL+A) and copy It (typically CTRL+C).
+While on the GitHub site, find the **Raw** button and click it. This will bring up a non-formatted page with just the code present. Select all of the code (typically ***CTRL+A***) and copy It (typically ***CTRL+C***).
 
 ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-GitHub.png "GitHub.png")
 
@@ -77,11 +82,11 @@ While on the GitHub site, find the **Raw** button and click it. This will bring 
 
 - Find the button on this page labeled **+New SmartApp** and click it.
 
-    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-NewSmartApp.png "NewSmartApp.png")
+    ![][NewSmartApp]
 
-- Since you already have the code in your computer’s clipboard, find the tab along the top section called **From Code**. In the area provided, paste (typically CTRL+V) the code you copied from GitHub. Click **Create** in the bottom left corner of the page.
+- Since you already have the code in your computer’s clipboard, find the tab along the top section called **From Code**. In the area provided, paste (typically ***CTRL+V***) the code you copied from GitHub. Click **Create** in the bottom left corner of the page.
 
-    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-NewSmartAppCreate.png "NewSmartAppCreate.png")
+    ![][NewSmartAppCreate]
 
 - This will bring up another page, with the code now formatted within the IDE. If the code was copied correctly, there are no other steps except to save and publish the code. In the upper right corner of the page, find and click **Save**. Now, click **Publish (For Me)**, and you should receive a confirmation that the code has been published successfully.
 
@@ -108,8 +113,11 @@ The final step is to press the **Update** button at the bottom left corner of th
 
 ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/SavePublish.png "SavePublish.png")
 
+-------------
+## SmartApp Install and Configuration
 
-### SmartApp Configuration
+
+### SmartApp Install
 Once you finished following the installation procedure above you will need to actually install the Pushover Manager SmartApp using the SmartThings Classic MobileApp
 
 - Open the SmartThings Mobile App (It is important to use the Classic app, as we have reports the new mobile app does not play well with custom SmartApps):
@@ -118,89 +126,47 @@ Once you finished following the installation procedure above you will need to ac
 - Scroll to the bottom of the list, select"**My Apps**"
 - Select"**Pushover Manager**" from the list.
 - You will see this page on your screen:
+
     ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/AppNewInstall.png "AppNewInstall.png")
- Enter Nest Login credentials when prompted.
-* Choose '''Structure'''
-* Choose '''Thermostats'''
-* Choose '''Protects'''
-* Choose '''Cameras'''
-* Choose ''Add Presence Device'' (Optional)
-* Choose ''Add Weather Device'' (Optional)
-* Tap '''"Next"'''
-* Review and Modify any preferences (Optional)
-* Tap on "**Done**"
+- Tap on "**Done**" to complete the install
+- Proceed to SmartApp Configuration
 
 
-Usage
------
+### SmartApp Configuration
+Once you finished following the installation procedure above you will need to actually configure the smartapp.
 
-Once you finished following the installation procedure above you will need to actually install the smartapp using 
+- Tap on the "**Automation**" Tap at the Bottom of the page and select "**SmartApps**" tab
+- Scroll down and Select "**Pushover Manager**" from the list.
+- You will see this page on your screen:
 
-![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/250px-CI-OpenScreen.png "CI-OpenScreen.png")
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/AppHomeAuth.png "AppHomeAuth.png")
 
-On this page you will be required to choose your specific login to the SmartThings environment. Valid choices are either **SmartThings** or **Samsung**.
+- Tap on "**Configure your Pushover Keys**"
+- Use the appropriate inputs to get both your User/Group Key and App Keys
+    
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/AppAuthPage.png "AppAuthPage.png")
+- Copy/Paste each key into the inputs at the bottom of the page
+- Tap on "**Done**"
+- You will be returned to the main home page:
 
-Once selected, tap \<<Installer Home>\>\> and you will be prompted to login to the SmartThings.
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/AppHomeConfigured.png "AppHomeConfigured.png")
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/AppHomeConfigured2.png "AppHomeConfigured2.png")
+- Make sure to update the App Name if you plan on installing multiple versions to handle multiple user/group keys
 
-### Main Menu (Home)
+-------------
+## Community SmartApps with Pushover Manager Integration
 
-Once you successfully login, you will see the main home page:
-
-![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/250px-CI-Home.png "CI-Home.png")
-
-Here, you can scroll through the available applications submitted to be included with **Community Installer (Free Marketplace)**. Please note not all available SmartThings developers submit their applications through this installer; if you are a developer and wish to include your SmartApp here, please see the section [Community\_Installer\_(Free\_Marketplace)\#Developers:\_How\_To\_Add\_Your\_Apps\_To\_Community\_Installer](Community_Installer_(Free_Marketplace)#Developers:_How_To_Add_Your_Apps_To_Community_Installer "wikilink")
-
-From the home page, each application is listed with the name, the number of registered installs (from the installer) along with a cumulative rating from users across the SmartThings eco-system. You may also see a banner on the applications indicating whether the SmartApp or device has been installed or if an upgrade is available.
-
-`   `**`Warning:`**
-`   If you are an active developer for the SmartThings environment`
-`   and regularly do development within the SmartThings IDE, you may`
-`   see an notification (likely on your own SmartApps) that an upgrade`
-`   is available when in reality, this flag is indicating there is a `
-`   difference between the GitHub version and your IDE's version. Please`
-`   note that upgrading from the GitHub will overwrite your current `
-`   application code.`
-
-### Search
-
-Also included on the web page is a search feature. Use this area to search for specific programs or device type handlers (DTHs) that you are looking for.
-
-![](CI-Search.png "CI-Search.png")
-
-### Application Information
-
-Tapping on any of the application boxes in the list on the home page will bring additional information about the application, including the author, project links, and even documentation and the GitHub information. In addition, you can rank the application.
-
-![](CI-AboutApp.png "CI-AboutApp.png")
-
-As you scroll down through the information you will also see information about individual components of the Smartapp, their version numbers, and the ability to select or deselect optional items to install.
-
-![](CI-Install.png "CI-Install.png")
-
-### Installation/Updates
-
-At the bottom of the information page for each application you will have the ability to install the application. In addition, if you already have a listed application installed and an upgrade is available, you will be given the ability to upgrade your code in your SmartThings IDE automatically using the installer.
-
-![](CI-AboutApp2.png "fig:CI-AboutApp2.png") ![](CI-Install2.png "fig:CI-Install2.png")
-
-The installation will handle adding the SmartApp and/or devices to your SmartThings IDE, and even add the links (if available) to sync the developer's GitHub with your SmartThings IDE. Finally, if the application required OAuth to be enabled the installer will do that as well as publishing the application (it the author deemed it necessary).
-
-
-
-Community SmartApps with Pushover Manager Integration
----------------------
 - [NST Manager](https://community.smartthings.com/t/release-nst-manager-v5-0/)
 
-
-Developers: Adding Pushover Manager Support to your SmartApps
--------------------------------------------------------
+-------------
+## Developers: Adding Pushover Manager Support to your SmartApps
 
 ### Demo SmartApp
 - [Pushover Integration Demo SmartApp](https://github.com/tonesto7/pushover-manager/blob/master/smartapps/tonesto7/pushover-integration-demo.src/pushover-integration-demo.groovy)
 
-If you are a developer and would like to have your application support Pushover Manager here's how:
 
-### Required: Add this Code to your SmartApp (DO NOT Modify)
+
+### Code Required: Add this Code block to your SmartApp (DO NOT Modify)
 
 ```groovy
 //PushOver-Manager Input Generation Functions
@@ -223,7 +189,7 @@ public pushover_handler(evt){switch(evt?.value){case"refresh":Map pD=state?.push
 private buildPushMessage(List devices,Map msgData,timeStamp=false){if(!devices||!msgData){return};Map data=[:];data?.appId=app?.getId();data.devices=devices;data?.msgData=msgData;if(timeStamp){data?.msgData?.timeStamp=new Date().getTime()};pushover_msg(devices,data);}
 ```
 
-### Example: Adding Device Input to Select Pushover Devices and Notification Sound
+### Example Code: Adding Device Input to Select Pushover Devices and Notification Sound
 ```groovy
 input ("pushoverEnabled", "bool", title: "Use Pushover Integration", required: false, submitOnChange: true)
 if(settings?.pushoverEnabled == true) {
@@ -244,7 +210,7 @@ All you need to add for a supported input is the ```type: "enum", groupedOptions
 
 - ***INFO***: The input names can be whatever you want and there can be as many instances as you want.  Basically it just generates the list of device names to send any message to.
 
-### Example: Adding to your Installed(), Updated(), and Initialize() Methods
+### Example Code: Adding to your Installed(), Updated(), and Initialize() Methods
 
 ```groovy
 def installed() {
@@ -264,7 +230,7 @@ def initialize() {
 }
 ```
 
-### Example: Sending a Pushover message
+### Example Code: Sending a Pushover message
 
 ```groovy
 def sendPushoverMessage() {
@@ -284,14 +250,16 @@ def sendPushoverMessage() {
         Param2: Map msgObj above
         Param3: Boolean add timeStamp
     */
-    buildPushMessage(settings?.pushoverDevices, msgObj, true)
+    buildPushMessage(settings?.pushoverDevices, msgObj, true) // This method is part of the required code block
 }
 ```
-API References
----------------
+
+## API References
+
 [Pushover API Documentation](https://pushover.net/api)
 - [Message Priority](https://pushover.net/api#priority)
 - [HTML Message Markup](https://pushover.net/api#html)
 - [Notification Sounds](https://pushover.net/api#sounds)
 - [Message Count Limitations](https://pushover.net/api#limits)
 
+---------------
