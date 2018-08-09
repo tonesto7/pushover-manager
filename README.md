@@ -30,7 +30,7 @@ It was designed in the wake of SmartThings removing support for ContactBook whic
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use **Pushover Manager** code except in compliance with the License. You may obtain a copy of the License at:
 
-<http://www.apache.org/licenses/LICENSE-2.0>
+<https://www.apache.org/licenses/LICENSE-2.0>
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
@@ -91,7 +91,7 @@ While on the GitHub site, find the **Raw** button and click it. This will bring 
 
 ### Advanced Installation
 
-For advanced users who have their SmartThings IDE integrated with GitHub, the installation and maintaining of SmartThings SmartApp code become's very simple. This manual will not go into detail about setting up your IDE with GitHub; those instructions can be found on the SmartThings website <http://docs.smartthings.com/en/latest/tools-and-ide/github-integration.html?highlight=git>
+For advanced users who have their SmartThings IDE integrated with GitHub, the installation and maintaining of SmartThings SmartApp code become's very simple. This manual will not go into detail about setting up your IDE with GitHub; those instructions can be found on the SmartThings website <https://docs.smartthings.com/en/latest/tools-and-ide/github-integration.html?highlight=git>
 
 Once you have integration, the code you need will be available to you to download and keep in sync with the latest versions.
 
