@@ -188,26 +188,21 @@ private buildPushMessage(List devices,Map msgData,timeStamp=false){if(!devices||
 
 ### Example Code: Adding Device Input to Select Pushover Devices and Notification Sound
 ```groovy
-input ("pushoverEnabled", "bool", title: "Use Pushover Integration", required: false, submitOnChange: true)
-if(state?.isInstalled) {
+section("Enable Pushover Support:") {
+    input ("pushoverEnabled", "bool", title: "Use Pushover Integration", required: false, submitOnChange: true)
     if(settings?.pushoverEnabled == true) {
-        if(!atomicState?.pushoverManager) {
-            section() {
-                paragraph "If this is your first time enabling Pushover leave this page and come back so the pushover devices can be populated"
+        if(state?.isInstalled) {
+            if(!atomicState?.pushoverManager) {
+                paragraph "If this is the first time enabling Pushover than leave this page and come back if the devices list is empty"
                 pushover_init()
-            }
-        }
-        section("Test Notifications:") {
-            input "pushoverDevices", "enum", title: "Select Pushover Devices", description: "Tap to select", groupedOptions: getPushoverDevices(), multiple: true, required: false, submitOnChange: true
-            if(settings?.pushoverDevices) {
-                input "pushoverSound", "enum", title: "Notification Sound (Optional)", description: "Tap to select", defaultValue: "pushover", required: false, multiple: false, submitOnChange: true, options: getPushoverSounds()
-                input "testMessage", "text", title: "Message to Send:", description: "Enter message to send...", required: false, submitOnChange: true
-                if(settings?.testMessage && settings?.testMessage?.length() > 0) {
-                    href "sendMessagePage", title: "Send Message", description: ""
+            } else {
+                input "pushoverDevices", "enum", title: "Select Pushover Devices", description: "Tap to select", groupedOptions: getPushoverDevices(), multiple: true, required: false, submitOnChange: true
+                if(settings?.pushoverDevices) {
+                    input "pushoverSound", "enum", title: "Notification Sound (Optional)", description: "Tap to select", defaultValue: "pushover", required: false, multiple: false, submitOnChange: true, options: getPushoverSounds()
                 }
             }
-        }
-    } else { section() { paragraph "New Install Detected!!!\n\n1. Press Done to Finish the Install.\n2. Goto the Automations Tab at the Bottom\n3. Tap on the SmartApps Tab above\n4. Select ${app?.getLabel()} and Resume configuration", state: "complete" } }
+        } else { paragraph "New Install Detected!!!\n\n1. Press Done to Finish the Install.\n2. Goto the Automations Tab at the Bottom\n3. Tap on the SmartApps Tab above\n4. Select ${app?.getLabel()} and Resume configuration", state: "complete" }
+    }
 }
 ```
 - ***INFO***: By using the groupedOptions: parameter over options: this allows support for multiple Pushover-Manager SmartApp installs each with different user keys and devices.  So it groups the devices by the pushover manager SmartApp label in one list.  All you need to add for a supported input is the ```type: "enum", groupedOptions: getPushoverDevices()``` to any input to get the pushdevices available on your ST account.
