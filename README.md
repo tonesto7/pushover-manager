@@ -58,15 +58,16 @@ The authors of this application will not be responsible for any damages that may
 -------------
 ## App Code Installation
 
-### Automated Installer (Highly Recommended)
+### Automated Community Installer (Highly Recommended)
 This is the simplest way to Install Pushover Manager as well as other community apps
 
 Please visit here for more info: [Things That Are Smart Wiki: SmartThings Community Installer](http://thingsthataresmart.wiki/index.php?title=Community_Installer_(Free_Marketplace))
 
 
 ### IDE Github Integration
-The code for the SmartThings SmartApp is found on the GitHub site:
-[https://raw.githubusercontent.com/tonesto7/pushover-manager/master/smartapps/tonesto7/pushover-manager.src/pushover-manager.groovy`](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/smartapps/tonesto7/pushover-manager.src/pushover-manager.groovy)
+The raw code for the SmartThings SmartApp is found on the GitHub site:
+
+[(RAW) pushover-manager.groovy](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/smartapps/tonesto7/pushover-manager.src/pushover-manager.groovy)
 
 While on the GitHub site, find the **Raw** button and click it. This will bring up a non-formatted page with just the code present. Select all of the code (typically ***CTRL+A***) and copy It (typically ***CTRL+C***).
 

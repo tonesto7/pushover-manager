@@ -67,7 +67,7 @@ def mainPage() {
             def validated = (settings?.apiKey && settings?.userKey && getValidated())
             def devices = validated ? getValidated(true) : []
             section("Pushover API Authentication: (${validated ? "Good" : "Missing"})", hideable: true, hidden: validated) {
-                href "authKeysPage", title: "Authentication Keys", description: "Configure you Pushover Keys", state: (validated ? "complete" : null), required: true
+                href "authKeysPage", title: "Authentication Keys", description: "Configure your Pushover Keys", state: (validated ? "complete" : null), required: true
             }
             if(validated) {
                 if(state?.messageData?.size()) {
