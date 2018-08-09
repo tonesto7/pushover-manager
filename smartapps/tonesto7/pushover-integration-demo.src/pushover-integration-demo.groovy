@@ -83,11 +83,9 @@ def sendMessagePage() {
                     priority: 0,  //Optional
                     retry: 30, //Requried only when sending with High-Priority
                     expire: 10800, //Requried only when sending with High-Priority
-                    sound: settings?.pushoverSound, //Optional
-                    //url: "https://www.foreverbride.com/files/6414/7527/3346/test.png", //Optional
-                    //url_title: "Test Image" //Optional
+                    sound: settings?.pushoverSound //Optional
                 ]
-                /* buildPushMessage()
+                /* buildPushMessage(List param1, Map param2, Boolean param3)
                     Param1: List of pushover Device Names
                     Param2: Map msgObj above
                     Param3: Boolean add timeStamp
