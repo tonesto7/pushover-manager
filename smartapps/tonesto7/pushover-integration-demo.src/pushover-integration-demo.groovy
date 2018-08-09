@@ -47,7 +47,7 @@ def mainPage() {
         appInfoSect()
         
         if(state?.isInstalled) {
-            if(!atomicState?.pushoverManagerData) {
+            if(!atomicState?.pushoverManager) {
                 section() {
                     paragraph "If this is your first time enabling Pushover leave this page and come back so the pushover devices can be populated"
                     pushover_init()
@@ -77,18 +77,22 @@ def sendMessagePage() {
                 paragraph title: "Sending Message: ", "${settings?.testMessage}", state: "complete"
                 paragraph "Device(s): ${settings?.pushoverDevices}" 
                 Map msgObj = [
-                    title: app?.getLabel()+"Test", //Optional
-                    html: false, //Optional
-                    message: settings?.testMessage, //Required
+                    title: app?.getLabel() + " (Demo Test)", //Optional and can be what ever
+                    html: false, //Optional see: https://pushover.net/api#html
+                    message: settings?.testMessage, //Required (HTML markup requires html: true, parameter)
                     priority: 0,  //Optional
-                    retry: 30, //Requried for High-Priority
-                    expire: 10800, //Requried for High-Priority
-                    sound: settings?.pushoverSound, //Optional (Defaults to Pushover sound)
-                    url: "https://www.foreverbride.com/files/6414/7527/3346/test.png", //Optional
-                    url_title: "Test Image" //Optional
-                    // timestamp: new Date().getTime(), //Optional
+                    retry: 30, //Requried only when sending with High-Priority
+                    expire: 10800, //Requried only when sending with High-Priority
+                    sound: settings?.pushoverSound, //Optional
+                    //url: "https://www.foreverbride.com/files/6414/7527/3346/test.png", //Optional
+                    //url_title: "Test Image" //Optional
                 ]
-                buildPushMessage(settings?.pushoverDevices, msgObj, true)
+                /* buildPushMessage()
+                    Param1: List of pushover Device Names
+                    Param2: Map msgObj above
+                    Param3: Boolean add timeStamp
+                */
+                buildPushMessage(settings?.pushoverDevices, msgObj, true) // This method is part of the required code block
             }
             state?.testMessageSent = true
         }
@@ -96,38 +100,19 @@ def sendMessagePage() {
 }
 
 //PushOver-Manager Input Generation Functions
-private getPushoverSounds(){return (Map) atomicState?.pushoverManagerData?.sounds?:[:]}
-private getPushoverDevices(){
-    List opts=[];
-    Map pd=atomicState?.pushoverManagerData?:[:];
-    pd?.apps?.each{k,v->
-        if(v&&v?.devices&&v?.appId){
-            Map dm=[:];
-            v?.devices?.sort{}?.each{i->
-                dm["${i}_${v?.appId}"]=i
-            };
-            addInputGrp(opts,v?.appName,dm);
-        }
-    };
-    return opts;
-}
+private getPushoverSounds(){return (Map) atomicState?.pushoverManager?.sounds?:[:]}
+private getPushoverDevices(){List opts=[];Map pmd=atomicState?.pushoverManager?:[:];pmd?.apps?.each{k,v->if(v&&v?.devices&&v?.appId){Map dm=[:];v?.devices?.sort{}?.each{i->dm["${i}_${v?.appId}"]=i};addInputGrp(opts,v?.appName,dm);}};return opts;}
 private inputOptGrp(List groups,String title){def group=[values:[],order:groups?.size()];group?.title=title?:"";groups<<group;return groups;}
 private addInputValues(List groups,String key,String value){def lg=groups[-1];lg["values"]<<[key:key,value:value,order:lg["values"]?.size()];return groups;}
 private listToMap(List original){original.inject([:]){r,v->r[v]=v;return r;}}
 private addInputGrp(List groups,String title,values){if(values instanceof List){values=listToMap(values)};values.inject(inputOptGrp(groups,title)){r,k,v->return addInputValues(r,k,v)};return groups;}
 private addInputGrp(values){addInputGrp([],null,values)}
-
 //PushOver-Manager Location Event Subscription Events, Polling, and Handlers
 public pushover_init(){subscribe(location,"pushoverManager",pushover_handler);pushover_poll()}
-public pushover_cleanup(){state?.remove("pushoverManagerData");unsubscribe("pushoverManager");}
-public pushover_poll(){sendLocationEvent(name:"pushoverManagerPoll",value:"poll",data:[empty:true],isStateChange:true,descriptionText:"Sending Poll Event to Pushover-Manager")}
+public pushover_cleanup(){state?.remove("pushoverManager");unsubscribe("pushoverManager");}
+public pushover_poll(){sendLocationEvent(name:"pushoverManagerCmd",value:"poll",data:[empty:true],isStateChange:true,descriptionText:"Sending Poll Event to Pushover-Manager")}
 public pushover_msg(List devs,Map data){if(devs&&data){sendLocationEvent(name:"pushoverManagerMsg",value:"sendMsg",data:data,isStateChange:true,descriptionText:"Sending Message to Pushover Devices: ${devs}");}}
-public pushover_handler(evt){
-    log.debug "pushover(${evt?.jsonData?.id}) name: ${evt?.jsonData?.appName}";
-    log.debug "pushover(${evt?.jsonData?.id}) devices: ${evt?.jsonData?.devices}";
-    log.debug "pushover(${evt?.jsonData?.id}) sounds: ${evt?.jsonData?.sounds}";
-    switch(evt?.value){case"refresh":Map pD=atomicState?.pushoverManagerData?:[:];pD?.apps=[:];if(evt?.jsonData?.id){pD?.apps["${evt?.jsonData?.id}"]=[:];pD?.apps["${evt?.jsonData?.id}"]?.devices=evt?.jsonData?.devices?:[];pD?.apps["${evt?.jsonData?.id}"]?.appName=evt?.jsonData?.appName;pD?.apps["${evt?.jsonData?.id}"]?.appId=evt?.jsonData?.id;};pD?.sounds=evt?.jsonData?.sounds?:[];atomicState?.pushoverManagerData=pD;break;case "reset":atomicState?.pushoverManagerData=[:];break;}}
-
+public pushover_handler(evt){Map pmd=atomicState?.pushoverManager?:[:];switch(evt?.value){case"refresh":def ed = evt?.jsonData;String id = ed?.appId;Map pA = pmd?.apps?.size() ? pmd?.apps : [:];if(id){pA[id]=pA?."${id}"instanceof Map?pA[id]:[:];pA[id]?.devices=ed?.devices?:[];pA[id]?.appName=ed?.appName;pA[id]?.appId=id;pmd?.apps = pA;};pmd?.sounds=ed?.sounds;break;case "reset":pmd=[:];break;};atomicState?.pushoverManager=pmd;}
 //Builds Map Message object to send to Pushover Manager
 private buildPushMessage(List devices,Map msgData,timeStamp=false){if(!devices||!msgData){return};Map data=[:];data?.appId=app?.getId();data.devices=devices;data?.msgData=msgData;if(timeStamp){data?.msgData?.timeStamp=new Date().getTime()};pushover_msg(devices,data);}
 
@@ -145,7 +130,6 @@ def updated() {
 
 def initialize() {
     pushover_init()
-    state?.remove("pushSounds")
 }
 
 def uninstalled() {

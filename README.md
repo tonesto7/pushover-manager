@@ -22,7 +22,7 @@ It was designed in the wake of SmartThings removing support for ContactBook whic
 
 |**Application**|**Version**|**Location**|
 |---------------|-----------|------------|
-|**Pushover Manager**|*1.0.0*|<https://raw.githubusercontent.com/tonesto7/pushover-manager/master/smartapps/tonesto7/pushover-manager.src/pushover-manager.groovy>|
+|**Pushover Manager**|*1.0.0*|[Pushover Manage Code](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/smartapps/tonesto7/pushover-manager.src/pushover-manager.groovy)|
 ||
 
 -----------
@@ -67,27 +67,27 @@ The raw code for the SmartThings SmartApp is found on the GitHub site:
 
 While on the GitHub site, find the **Raw** button and click it. This will bring up a non-formatted page with just the code present. Select all of the code (typically ***CTRL+A***) and copy It (typically ***CTRL+C***).
 
-![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-GitHub.png "GitHub.png")
+![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/ST-GitHub.png "ST-GitHub.png")
 
 - Next, point your browser to you SmartThings IDE for your country (https://account.smartthings.com/login) and **Log In**.
 
-    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-Loginscreen.jpg "loginscreen.jpg")
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/ST-Loginscreen.jpg "ST-Loginscreen.jpg")
 
 - Once you are logged in, find the **My SmartApps** link on the top of the page. Clicking **My SmartApps** will allow you to produce a new SmartApp.
 
-    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-MySmartApps.png "MySmartApps.png")
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-MySmartApps.png "ST-MySmartApps.png")
 
 - Find the button on this page labeled **+New SmartApp** and click it.
 
-    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-NewSmartApp.png "NewSmartApp.png")
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/ST-NewSmartApp.png "ST-NewSmartApp.png")
 
 - Since you already have the code in your computer’s clipboard, find the tab along the top section called **From Code**. In the area provided, paste (typically ***CTRL+V***) the code you copied from GitHub. Click **Create** in the bottom left corner of the page.
 
-    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-NewSmartAppCreate.png "NewSmartAppCreate.png")
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/ST-NewSmartAppCreate.png "ST-NewSmartAppCreate.png")
 
 - This will bring up another page, with the code now formatted within the IDE. If the code was copied correctly, there are no other steps except to save and publish the code. In the upper right corner of the page, find and click **Save**. Now, click **Publish (For Me)**, and you should receive a confirmation that the code has been published successfully.
 
-    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/SavePublish.png "SavePublish.png")
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/ST-SavePublish.png "ST-SavePublish.png")
 
 ### Advanced Installation
 
@@ -96,7 +96,7 @@ For advanced users who have their SmartThings IDE integrated with GitHub, the in
 Once you have integration, the code you need will be available to you to download and keep in sync with the latest versions.
 
 -   First, find the **Settings** button at the top of your SmartThings IDE page (this will only appear after you integrate with GitHub)
-![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/IdeSettings.jpg "IdeSettings.jpg")
+![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/ST-IDE-Settings.jpg "ST-IDE-Settings.jpg")
 
 -   Clicking this button will open the GitHub Repository Integration page. To find the **Pushover Manager** SmartApp code, enter the information as you see it below:
 
@@ -104,11 +104,11 @@ Once you have integration, the code you need will be available to you to downloa
     |---------|--------|----------|
     |tonesto7|pushover-manager|master|
 
-    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/Github_AddRepoLink.png "Github_AddRepoLink.png")
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/PM-AddRepoLink.png "PM-AddRepoLink.png")
 
 The final step is to press the **Update** button at the bottom left corner of the screen, or go back to your code by using the button in the upper-right region of the page, then **Save**, then **Publish** the SmartApp again.
 
-![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/SavePublish.png "SavePublish.png")
+![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/ST-SavePublish.png "ST-SavePublish.png")
 
 -------------
 ## SmartApp Install and Configuration
@@ -124,7 +124,7 @@ Once you finished following the installation procedure above you will need to ac
 - Select"**Pushover Manager**" from the list.
 - You will see this page on your screen:
 
-    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/AppNewInstall.png "AppNewInstall.png")
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/PM-AppNewInstall.png "PM-AppNewInstall.png")
 - Tap on "**Done**" to complete the install
 - Proceed to SmartApp Configuration
 
@@ -135,22 +135,22 @@ Once you finished following the installation procedure above you will need to ac
 - Tap on the "**Automation**" Tap at the Bottom of the page and select "**SmartApps**" tab
 - Scroll down and Select "**Pushover Manager**" from the list.
 
-    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/SmartAppList.png "SmartAppList.png")
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/PM-SmartAppList.png "PM-SmartAppList.png")
 
 - You will see this page on your screen:
 
-    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/AppHomeAuth.png "AppHomeAuth.png")
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/PM-AppHomeAuth.png "PM-AppHomeAuth.png")
 
 - Tap on "**Configure your Pushover Keys**"
 - Use the appropriate inputs to get both your User/Group Key and App Keys
 
-    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/AppAuthPage.png "AppAuthPage.png")
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/PM-AppAuthPage.png "PM-AppAuthPage.png")
 - Copy/Paste each key into the inputs at the bottom of the page
 - Tap on "**Done**"
 - You will be returned to the main home page:
 
-    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/AppHomeConfigured.png "AppHomeConfigured.png")
-    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/AppHomeConfigured2.png "AppHomeConfigured2.png")
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/PM-AppHomeConfigured.png "AppHomeConfigured.png")
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/PM-AppHomeConfigured2.png "AppHomeConfigured2.png")
 - Make sure to update the App Name if you plan on installing multiple versions to handle multiple user/group keys
 
 -------------
@@ -165,25 +165,23 @@ Once you finished following the installation procedure above you will need to ac
 - [Pushover Integration Demo SmartApp](https://github.com/tonesto7/pushover-manager/blob/master/smartapps/tonesto7/pushover-integration-demo.src/pushover-integration-demo.groovy)
 
 
-
 ### Code Required: Add this Code block to your SmartApp (DO NOT Modify)
 
 ```groovy
 //PushOver-Manager Input Generation Functions
-private getPushoverSounds(){return (Map) atomicState?.pushoverManagerData?.sounds?:[:]}
-private getPushoverDevices(){List opts=[];Map pd=atomicState?.pushoverManagerData?:[:];pd?.apps?.each{k,v->if(v&&v?.devices&&v?.appId){Map dm=[:];v?.devices?.sort{}?.each{i->dm["${i}_${v?.appId}"]=i};addInputGrp(opts,v?.appName,dm);}};return opts;}
+private getPushoverSounds(){return (Map) atomicState?.pushoverManager?.sounds?:[:]}
+private getPushoverDevices(){List opts=[];Map pmd=atomicState?.pushoverManager?:[:];pmd?.apps?.each{k,v->if(v&&v?.devices&&v?.appId){Map dm=[:];v?.devices?.sort{}?.each{i->dm["${i}_${v?.appId}"]=i};addInputGrp(opts,v?.appName,dm);}};return opts;}
 private inputOptGrp(List groups,String title){def group=[values:[],order:groups?.size()];group?.title=title?:"";groups<<group;return groups;}
 private addInputValues(List groups,String key,String value){def lg=groups[-1];lg["values"]<<[key:key,value:value,order:lg["values"]?.size()];return groups;}
 private listToMap(List original){original.inject([:]){r,v->r[v]=v;return r;}}
 private addInputGrp(List groups,String title,values){if(values instanceof List){values=listToMap(values)};values.inject(inputOptGrp(groups,title)){r,k,v->return addInputValues(r,k,v)};return groups;}
 private addInputGrp(values){addInputGrp([],null,values)}
-
 //PushOver-Manager Location Event Subscription Events, Polling, and Handlers
 public pushover_init(){subscribe(location,"pushoverManager",pushover_handler);pushover_poll()}
-public pushover_cleanup(){state?.remove("pushoverManagerData");unsubscribe("pushoverManager");}
-public pushover_poll(){sendLocationEvent(name:"pushoverManagerPoll",value:"poll",data:[empty:true],isStateChange:true,descriptionText:"Sending Poll Event to Pushover-Manager")}
+public pushover_cleanup(){state?.remove("pushoverManager");unsubscribe("pushoverManager");}
+public pushover_poll(){sendLocationEvent(name:"pushoverManagerCmd",value:"poll",data:[empty:true],isStateChange:true,descriptionText:"Sending Poll Event to Pushover-Manager")}
 public pushover_msg(List devs,Map data){if(devs&&data){sendLocationEvent(name:"pushoverManagerMsg",value:"sendMsg",data:data,isStateChange:true,descriptionText:"Sending Message to Pushover Devices: ${devs}");}}
-public pushover_handler(evt){switch(evt?.value){case"refresh":Map pD=atomicState?.pushoverManagerData?:[:];pD?.apps=[:];if(evt?.jsonData?.id){pD?.apps["${evt?.jsonData?.id}"]=[:];pD?.apps["${evt?.jsonData?.id}"]?.devices=evt?.jsonData?.devices?:[];pD?.apps["${evt?.jsonData?.id}"]?.appName=evt?.jsonData?.appName;pD?.apps["${evt?.jsonData?.id}"]?.appId=evt?.jsonData?.id;};pD?.sounds=evt?.jsonData?.sounds?:[];atomicState?.pushoverManagerData=pD;break;case "reset":atomicState?.pushoverManagerData=[:];break;}}
+public pushover_handler(evt){Map pmd=atomicState?.pushoverManager?:[:];switch(evt?.value){case"refresh":def ed = evt?.jsonData;String id = ed?.appId;Map pA = pmd?.apps?.size() ? pmd?.apps : [:];if(id){pA[id]=pA?."${id}"instanceof Map?pA[id]:[:];pA[id]?.devices=ed?.devices?:[];pA[id]?.appName=ed?.appName;pA[id]?.appId=id;pmd?.apps = pA;};pmd?.sounds=ed?.sounds;break;case "reset":pmd=[:];break;};atomicState?.pushoverManager=pmd;}
 //Builds Map Message object to send to Pushover Manager
 private buildPushMessage(List devices,Map msgData,timeStamp=false){if(!devices||!msgData){return};Map data=[:];data?.appId=app?.getId();data.devices=devices;data?.msgData=msgData;if(timeStamp){data?.msgData?.timeStamp=new Date().getTime()};pushover_msg(devices,data);}
 ```
@@ -193,7 +191,7 @@ private buildPushMessage(List devices,Map msgData,timeStamp=false){if(!devices||
 input ("pushoverEnabled", "bool", title: "Use Pushover Integration", required: false, submitOnChange: true)
 if(state?.isInstalled) {
     if(settings?.pushoverEnabled == true) {
-        if(!atomicState?.pushoverManagerData) {
+        if(!atomicState?.pushoverManager) {
             section() {
                 paragraph "If this is your first time enabling Pushover leave this page and come back so the pushover devices can be populated"
                 pushover_init()
@@ -212,8 +210,9 @@ if(state?.isInstalled) {
     } else { section() { paragraph "New Install Detected!!!\n\n1. Press Done to Finish the Install.\n2. Goto the Automations Tab at the Bottom\n3. Tap on the SmartApps Tab above\n4. Select ${app?.getLabel()} and Resume configuration", state: "complete" } }
 }
 ```
-- ***INFO***: By using the groupedOptions: parameter over options: this allows support for multiple Pushover-Manager SmartApp installs each with different user keys and devices.  So it groups the devices by the pushover manager SmartApp label in one list.
-All you need to add for a supported input is the ```type: "enum", groupedOptions: getPushoverDevices()``` to any input to get the pushdevices available on your ST account.
+- ***INFO***: By using the groupedOptions: parameter over options: this allows support for multiple Pushover-Manager SmartApp installs each with different user keys and devices.  So it groups the devices by the pushover manager SmartApp label in one list.  All you need to add for a supported input is the ```type: "enum", groupedOptions: getPushoverDevices()``` to any input to get the pushdevices available on your ST account.
+
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/PM-DeviceAppGroups.png "DeviceAppGroups.png")
 
 - ***INFO***: The input names can be whatever you want and there can be as many instances as you want.  Basically it just generates the list of device names to send any message to.
 
@@ -243,8 +242,8 @@ def initialize() {
 def sendPushoverMessage() {
     Map msgObj = [
         title: app?.getLabel(), //Optional and can be what ever
-        html: false, //Optional
-        message: "some message string here", //Required (HTML markup allowed see: [](https://pushover.net/api#html))
+        html: false, //Optional see: https://pushover.net/api#html
+        message: "some message string here", //Required (HTML markup requires html: true, parameter)
         priority: 0,  //Optional
         retry: 30, //Requried only when sending with High-Priority
         expire: 10800, //Requried only when sending with High-Priority

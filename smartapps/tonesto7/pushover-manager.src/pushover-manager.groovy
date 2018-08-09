@@ -187,20 +187,20 @@ def sendTestMessage(devices, data) {
 }
 
 def installed() {
+    state?.isInstalled = true
     log.debug "Installed with settings: ${settings}"
     initialize()
 }
 
 def updated() {
     log.debug "Updated with settings: ${settings}"
+    unsubscribe()
     initialize()
 }
 
 def initialize() {
-    state?.isInstalled = true
-    unsubscribe()
     subscribe(location, "pushoverManagerMsg", locMessageHandler)
-    subscribe(location, "pushoverManagerPoll", locMessageHandler)
+    subscribe(location, "pushoverManagerCmd", locCommandHandler)
     sendDeviceRefreshEvt()
 }
 
@@ -235,21 +235,29 @@ Boolean apiKeyOk() {
 }
 
 def locMessageHandler(evt) {
-    log.debug "locMessageHandler: ${evt?.jsonData}"
+    log.trace "locMessageHandler(${evt?.value})"
+    // log.trace "locMessageHandler(${evt?.value}): ${evt?.jsonData}"
     if (!evt) return
     if (!apiKeyOk() || !userKeyOk()) { return }
     switch (evt?.value) {
         case "sendMsg":
             List pushDevices = []
             if (evt?.jsonData && evt?.jsonData?.devices && evt?.jsonData?.msgData?.size()) {
-                log.trace "locMessageHandler(sendMsg)"
                 evt?.jsonData?.devices?.each { nd->
                     if(nd?.toString()?.contains(app?.getId() as String)) { sendPushoverMessage(nd as String, evt?.jsonData?.msgData) }
                 }
             }
             break
+    }
+}
+
+def locCommandHandler(evt) {
+    log.trace "locCommandHandler(${evt?.value})"
+    // log.trace "locCommandHandler(${evt?.value}): ${evt?.jsonData}"
+    if (!evt) return
+    if (!apiKeyOk() || !userKeyOk()) { return }
+    switch (evt?.value) {
         case "poll":
-            log.debug "locMessageHandler: poll()"
             sendDeviceRefreshEvt()
             break
     }
@@ -355,10 +363,8 @@ void sendPushoverMessage(deviceName, msgData) {
             if(msgData?.timestamp) { bodyItems?.timestamp = msgData?.timestamp }
             if(msgData?.html == true) { bodyItems?.html = 1 }
 
-            def test = false
-            Map params = [uri: test ? "http://requestbin.fullcontact.com/r50ennr5" : "https://api.pushover.net/1/messages.json"]
+            Map params = [uri: "https://api.pushover.net/1/messages.json"]
             String imgStr = hasImage ? getImageData(msgData?.image?.url, msgData?.image?.type) as String : null
-            // log.debug "imgStr length: ${imgStr != null ? "${imgStr?.toString()?.length()}" : "null"}"
             if(hasImage && imgStr) {
                 imgStr = new JsonOutput().toJson(imgStr) as String
                 imgStr = imgStr.replaceFirst("\"","")
@@ -425,13 +431,10 @@ def pushoverResponse(resp, data) {
 
 def getImageData(url, fileType) {
     try {
-        def test = false
-        def params = [uri: url, contentType: test ? "${fileType}; charset=UTF-8" : "text/plain; charset=UTF-8"]
+        def params = [uri: url, contentType: "text/plain; charset=UTF-8"]
         httpGet(params) { resp ->
             if(resp?.status == 200) {
                 if(resp?.data) {
-                    // Byte[] rawBytes = resp?.data?.getBytes()
-                    // log.debug "encoding: ${resp?.getEntity()}"
                     String rawText = ""
                     def sizeHeader = resp?.getHeaders("Content-Length")
                     def size = (sizeHeader?.value && sizeHeader?.value[0] && sizeHeader?.value[0]?.isNumber()) ? sizeHeader.value[0] : null
@@ -445,27 +448,6 @@ def getImageData(url, fileType) {
                             for (int i = 0; i < size?.toInteger(); i++) { char c = (char) sr?.read(); rawText += c; }
                             sr?.close()
                             return rawText as String
-                            
-                            // def respData = resp?.data
-                            
-                            // int n = respData.available();
-                            // byte[] bytes = new byte[n];
-                            // respData.read(bytes, 0, n);
-                            // String s = new String(bytes, org.apache.commons.lang3.CharEncoding.UTF_8);
-                            
-                            // rawText = s.toString()
-                            
-                            // log.debug "respData: $respData"
-                            // ByteArrayOutputStream bos = new ByteArrayOutputStream()
-                            // int len
-                            // int sz = 4096
-                            // byte[] buf = new byte[sz]
-                            // while ((len = respData.read(buf, 0, sz)) != -1)
-                            //     bos.write(buf, 0, len)
-                            // buf = bos.toByteArray()
-                            // log.debug "buf: ${buf}"
-                            // log.debug "rawText: $rawText"
-                            // return rawText as String
                         }
                     } else { return null }
                 }
