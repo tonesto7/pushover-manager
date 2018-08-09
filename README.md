@@ -75,7 +75,7 @@ While on the GitHub site, find the **Raw** button and click it. This will bring 
 
 - Once you are logged in, find the **My SmartApps** link on the top of the page. Clicking **My SmartApps** will allow you to produce a new SmartApp.
 
-    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-MySmartApps.png "ST-MySmartApps.png")
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/ST-MySmartApps.png "ST-MySmartApps.png")
 
 - Find the button on this page labeled **+New SmartApp** and click it.
 
