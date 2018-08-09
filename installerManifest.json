@@ -5,7 +5,7 @@
     "repoBranch": "master",
     "name": "Pushover Manager",
     "author": "Anthony S.",
-    "description": "Pushover Manager is a SmartApp that allows you to expose your Pushover devices to any 3rd-Party SmartApp that adds support for the locationEvents this SmartApp uses. This allow you to Send customizable rich push notifications to the devices you want when you want. It was designed to emulating the ContactBook feature.",
+    "description": "Pushover Manager will allow you to expose your Pushover devices to any 3rd-Party SmartApp that adds Pushover Manager support. This will allow you to send rich customizable push notifications to the devices you want and to only the specific devices you want. It was designed to emulating the ContactBook feature.",
     "category": "My Apps",
     "bannerUrl": "https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/pushover_banner.png",
     "forumUrl": "https://community.smartthings.com/t/release-pushover-manager/",
@@ -15,7 +15,9 @@
         "pushover",
         "notification",
         "push",
-        "alerts"
+        "alerts",
+        "contact",
+        "book"
     ],
     "notes": "This app is useless by itself!!! It only works when integrated in other community SmartApps",
     "smartApps": {
