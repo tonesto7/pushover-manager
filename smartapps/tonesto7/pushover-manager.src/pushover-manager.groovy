@@ -17,7 +17,7 @@
 
 import groovy.json.*
 def appVer() { return "v1.0.0" }
-def appDate() { return "8-07-2018" }
+def appDate() { return "8-09-2018" }
 
 definition(
     name: "Pushover Manager",
@@ -57,6 +57,7 @@ String appRegisterUrl() { return "https://pushover.net/login?back_to=/apps/build
 String userLoginUrl() { return "https://pushover.net/login" }
 String costFaqUrl() { return "https://pushover.net/faq#overview-fees" }
 String faqUrl() { return "https://pushover.net/faq" }
+String apiDocUrl() { return "https://pushover.net/api" }
 
 def mainPage() {
     return dynamicPage(name: "mainPage", title: "", install: true, uninstall: true) {
@@ -113,7 +114,7 @@ def authKeysPage() {
             href url: appRegisterUrl(), style: "embedded", title: "Create Pushover App", description: "Tap here to Create a New Pushover App and get your new App Key.  Then copy/paste the App Key into the input below.", state: "complete"
         }
         section() {
-            input "userKey", "text", title: "User Key:", description: "Pushover User Key", required: true, submitOnChange: true
+            input "userKey", "text", title: "User/Group Key:", description: "Pushover User/Group Key", required: true, submitOnChange: true
             input "apiKey", "text", title: "App Key:", description: "Pushover App Key", required: true, submitOnChange: true
         }
     }
@@ -124,6 +125,7 @@ def infoPage() {
         section() {
             href url: costFaqUrl(), style: "embedded", title: "How much does this cost?", description: "Tap to open", state: "complete"
             href url: faqUrl(), style: "embedded", title: "Frequently Asked Question?", description: "Tap to open", state: "complete"
+            href url: apiDocUrl(), style: "embedded", title: "Pushover API Documentation", description: "Tap to open", state: "complete"
         }
     }
 }

@@ -14,7 +14,7 @@
  *
  */
 def appVer() { return "v1.0.0" }
-def appDate() { return "8-07-2018" }
+def appDate() { return "8-09-2018" }
 
 definition(
     name: "Pushover-Integration-Demo",
@@ -24,7 +24,7 @@ definition(
     category: "My Apps",
     iconUrl: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience.png",
     iconX2Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience@2x.png",
-    iconX3Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience@3x.png")
+    iconX3Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience@2x.png")
 
 
 preferences {
@@ -38,7 +38,7 @@ def appInfoSect()	{
         str += "${app?.name}"
         str += "\nVersion: ${appVer()}"
         str += "\nModified: ${appDate()}"
-        paragraph str, image: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience@3x.png"
+        paragraph str, image: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience@2x.png"
     }
 }
 

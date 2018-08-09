@@ -172,9 +172,12 @@ Current Featured Apps
 Developers: Adding Pushover Manager Support to your SmartApps
 -------------------------------------------------------
 
+### Demo SmartApp
+- [Pushover Integration Demo SmartApp](https://github.com/tonesto7/pushover-manager/blob/master/smartapps/tonesto7/pushover-integration-demo.src/pushover-integration-demo.groovy)
+
 If you are a developer and would like to have your application support Pushover Manager here's how:
 
-### Required Code (Do not Modify)
+### Required: Add this Code to your SmartApp (DO NOT Modify)
 
 ```groovy
 //PushOver-Manager Input Generation Functions
@@ -197,7 +200,7 @@ public pushover_handler(evt){switch(evt?.value){case"refresh":Map pD=state?.push
 private buildPushMessage(List devices,Map msgData,timeStamp=false){if(!devices||!msgData){return};Map data=[:];data?.appId=app?.getId();data.devices=devices;data?.msgData=msgData;if(timeStamp){data?.msgData?.timeStamp=new Date().getTime()};pushover_msg(devices,data);}
 ```
 
-### Example Device Input to Select Pushover Devices and Notification Sound
+### Example: Adding Device Input to Select Pushover Devices and Notification Sound
 ```groovy
 input ("pushoverEnabled", "bool", title: "Use Pushover Integration", required: false, submitOnChange: true)
 if(settings?.pushoverEnabled == true) {
@@ -213,13 +216,32 @@ if(settings?.pushoverEnabled == true) {
     }
 }
 ```
-- ***INFO***: By using the grouped options function this adds support for multiple Pushover-Manager account instances.  By grouping the devices by the pushover manager install in one list.  
+- ***INFO***: By using the groupedOptions: parameter over options: this allows support for multiple Pushover-Manager SmartApp installs each with different user keys and devices.  So it groups the devices by the pushover manager SmartApp label in one list.
 All you need to add for a supported input is the ```type: "enum", groupedOptions: getPushoverDevices()``` to any input to get the pushdevices available on your ST account.
 
 - ***INFO***: The input names can be whatever you want and there can be as many instances as you want.  Basically it just generates the list of device names to send any message to.
 
+### Example: Adding to your Installed(), Updated(), and Initialize() Methods
 
-# Sending a pushover message
+```groovy
+def installed() {
+    log.debug "Installed with settings: ${settings}"
+    state?.isInstalled = true
+    initialize()
+}
+
+def updated() {
+    log.debug "Updated with settings: ${settings}"
+    unsubscribe()
+    initialize()
+}
+
+def initialize() {
+    pushover_init()
+}
+```
+
+### Example: Sending a Pushover message
 
 ```groovy
 def sendPushoverMessage() {
