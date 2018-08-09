@@ -13,7 +13,6 @@ Summary
 
 **ST Community handle**: <https://community.smartthings.com/u/tonesto7/summary>
 
-**Documentation contributions:** Michael Struck
 
 ### Latest Versions
 
@@ -96,7 +95,7 @@ Once you have integration, the code you need will be available to you to downloa
     |---------|--------|----------|
     |tonesto7|pushover-manager|master|
 
-    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/CI-IDELink.png "CI-IDELink.png")
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/Github_AddRepoLink.png "Github_AddRepoLink.png")
 
 The final step is to press the **Update** button at the bottom left corner of the screen, or go back to your code by using the button in the upper-right region of the page, then **Save**, then **Publish** the SmartApp again.
 
@@ -105,19 +104,13 @@ The final step is to press the **Update** button at the bottom left corner of th
 Usage
 -----
 
-Once in follow the installation procedure above, along with enabling OAuth, you will be presented with the following screen:
+Once you finished following the installation procedure above you will be presented with the following screen:
 
 ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/250px-CI-OpenScreen.png "CI-OpenScreen.png")
 
 On this page you will be required to choose your specific login to the SmartThings environment. Valid choices are either **SmartThings** or **Samsung**.
 
 Once selected, tap \<<Installer Home>\>\> and you will be prompted to login to the SmartThings.
-
-`   `**`Please` `Note:`**
-`   As mentioned in the privacy statement, your data is not uploaded`
-`   to any third-party server. Instead, `**`Community` `Installer` `(Free` `Marketplace)`**
-`   queries your SmartThings configuration, building you an installer`
-`   HTML page custom to you.`
 
 ### Main Menu (Home)
 
@@ -173,18 +166,87 @@ In addition if you leave your the **Community Installer (Free Marketplace)** ope
 
 Current Featured Apps
 ---------------------
+- [NST Manager](https://community.smartthings.com/t/release-nst-manager-v5-0/)
 
--   List to come soon (There is 15 apps currently)
 
-Developers: How To Add Your Apps To Community Installer
+Developers: Adding Pushover Manager Support to your SmartApps
 -------------------------------------------------------
 
-To maintain integrity of the marketplace, developers can not post directly to **Community Installer (Free Marketplace)**. Instead, the list of available applications is maintained by a small group of individuals (including the author of this application). This prevents rouge applications from being place into your IDE.
+If you are a developer and would like to have your application support Pushover Manager here's how:
 
-If you are a developer and would like to have your application available to the community through the **Community Installer (Free Marketplace)**, please follow the following steps:
+### Required Code (Do not Modify)
 
--   The developers must fill out a JSON manifest that allows the installer to present the necessary information to the users.
--   TBD
--   TBD
--   TBD
--   TBD
+```groovy
+//PushOver-Manager Input Generation Functions
+private getPushoverSounds(){return (Map) state?.pushoverManagerData?.sounds?:[:]}
+private getPushoverDevices(){List opts=[];Map pd=state?.pushoverManagerData?:[:];pd?.apps?.each{k,v->if(v&&v?.devices&&v?.appId){Map dm=[:];v?.devices?.sort{}?.each{i->dm["${i}_${v?.appId}"]=i};addInputGrp(opts,v?.appName,dm);}};return opts;}
+private inputOptGrp(List groups,String title){def group=[values:[],order:groups?.size()];group?.title=title?:"";groups<<group;return groups;}
+private addInputValues(List groups,String key,String value){def lg=groups[-1];lg["values"]<<[key:key,value:value,order:lg["values"]?.size()];return groups;}
+private listToMap(List original){original.inject([:]){r,v->r[v]=v;return r;}}
+private addInputGrp(List groups,String title,values){if(values instanceof List){values=listToMap(values)};values.inject(inputOptGrp(groups,title)){r,k,v->return addInputValues(r,k,v)};return groups;}
+private addInputGrp(values){addInputGrp([],null,values)}
+
+//PushOver-Manager Location Event Subscription Events, Polling, and Handlers
+public pushover_init(){subscribe(location,"pushoverManager",pushover_handler);pushover_poll()}
+public pushover_cleanup(){state?.remove("pushoverManagerData");unsubscribe("pushoverManager");}
+public pushover_poll(){sendLocationEvent(name:"pushoverManagerPoll",value:"poll",data:[empty:true],isStateChange:true,descriptionText:"Sending Poll Event to Pushover-Manager")}
+public pushover_msg(List devs,Map data){if(devs&&data){sendLocationEvent(name:"pushoverManagerMsg",value:"sendMsg",data:data,isStateChange:true,descriptionText:"Sending Message to Pushover Devices: ${devs}");}}
+public pushover_handler(evt){switch(evt?.value){case"refresh":Map pD=state?.pushoverManagerData?:[:];pD?.apps=[:];pD?.apps["${evt?.jsonData?.id}"]=[:];pD?.apps["${evt?.jsonData?.id}"]?.devices=evt?.jsonData?.devices?:[];pD?.apps["${evt?.jsonData?.id}"]?.appName=evt?.jsonData?.appName;pD?.apps["${evt?.jsonData?.id}"]?.appId=evt?.jsonData?.id;pD?.sounds=evt?.jsonData?.sounds?:[];state?.pushoverManagerData=pD;break;case "reset":state?.pushoverManagerData=[:];break;}}
+
+//Builds Map Message object to send to Pushover Manager
+private buildPushMessage(List devices,Map msgData,timeStamp=false){if(!devices||!msgData){return};Map data=[:];data?.appId=app?.getId();data.devices=devices;data?.msgData=msgData;if(timeStamp){data?.msgData?.timeStamp=new Date().getTime()};pushover_msg(devices,data);}
+```
+
+### Example Device Input to Select Pushover Devices and Notification Sound
+```groovy
+input ("pushoverEnabled", "bool", title: "Use Pushover Integration", required: false, submitOnChange: true)
+if(settings?.pushoverEnabled == true) {
+    if(!state?.pushoverManagerData) { 
+        if(state?.isInstalled) {
+            paragraph "If this is your first time enabling Pushover leave this page and come back so the pushover devices can be populated"
+            pushover_init() 
+        } else { paragraph "Please complete the SmartApp install and configure later."}
+    }
+    input "pushoverDevices", "enum", title: "Select Pushover Devices", description: "Tap to select", groupedOptions: getPushoverDevices(), multiple: true, required: true, submitOnChange: true
+    if(settings?.pushoverDevices) {
+        input "pushoverSound", "enum", title: "Notification Sound (Optional)", description: "Tap to select", defaultValue: "pushover", required: false, multiple: false, submitOnChange: true, options: getPushoverSounds()
+    }
+}
+```
+- ***INFO***: By using the grouped options function this adds support for multiple Pushover-Manager account instances.  By grouping the devices by the pushover manager install in one list.  
+All you need to add for a supported input is the ```type: "enum", groupedOptions: getPushoverDevices()``` to any input to get the pushdevices available on your ST account.
+
+- ***INFO***: The input names can be whatever you want and there can be as many instances as you want.  Basically it just generates the list of device names to send any message to.
+
+
+# Sending a pushover message
+
+```groovy
+def sendPushoverMessage() {
+    Map msgObj = [
+        title: app?.getLabel(), //Optional and can be what ever
+        html: false, //Optional
+        message: "some message string here", //Required (HTML markup allowed see: [](https://pushover.net/api#html))
+        priority: 0,  //Optional
+        retry: 30, //Requried only when sending with High-Priority
+        expire: 10800, //Requried only when sending with High-Priority
+        sound: settings?.pushoverSound, //Optional 
+        url: "https://www.foreverbride.com/files/6414/7527/3346/test.png", //Optional
+        url_title: "Test Image" //Optional
+    ]
+    /* buildPushMessage()
+        Param1: List of pushover Device Names
+        Param2: Map msgObj above
+        Param3: Boolean add timeStamp
+    */
+    buildPushMessage(settings?.pushoverDevices, msgObj, true)
+}
+```
+API References
+---------------
+[Pushover API Documentation](https://pushover.net/api)
+- [Message Priority](https://pushover.net/api#priority)
+- [HTML Message Markup](https://pushover.net/api#html)
+- [Notification Sounds](https://pushover.net/api#sounds)
+- [Message Count Limitations](https://pushover.net/api#limits)
+
