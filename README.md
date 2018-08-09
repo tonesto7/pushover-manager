@@ -39,7 +39,7 @@ Requirements
 
 The following are the basic requirements to use **Pushover Manager**:
 
--   A mobile device running the SmartThings mobile application
+-   A mobile device running the SmartThings Classic mobile application
 -   Access to your SmartThings IDE
 -   A community SmartApp with Pushover Manager Support
 
@@ -55,30 +55,31 @@ Installation
 
 The code for the SmartThings SmartApp is found on the GitHub site:
 
-`  `[`https://raw.githubusercontent.com/tonesto7/pushover-manager/master/smartapps/tonesto7/pushover-manager.src/pushover-manager.groovy`](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/smartapps/tonesto7/pushover-manager.src/pushover-manager.groovy)
+[https://raw.githubusercontent.com/tonesto7/pushover-manager/master/smartapps/tonesto7/pushover-manager.src/pushover-manager.groovy`](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/smartapps/tonesto7/pushover-manager.src/pushover-manager.groovy)
 
 While on the GitHub site, find the **Raw** button and click it. This will bring up a non-formatted page with just the code present. Select all of the code (typically CTRL+A) and copy It (typically CTRL+C).
 
 ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-GitHub.png "GitHub.png")
 
--   Next, point your browser to you SmartThings IDE for your country (https://account.smartthings.com/login) and **Log In**.
+- Next, point your browser to you SmartThings IDE for your country (https://account.smartthings.com/login) and **Log In**.
 
-![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-Loginscreen.jpg "loginscreen.jpg")
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-Loginscreen.jpg "loginscreen.jpg")
 
--   Once you are logged in, find the **My SmartApps** link on the top of the page. Clicking **My SmartApps** will allow you to produce a new SmartApp.
+- Once you are logged in, find the **My SmartApps** link on the top of the page. Clicking **My SmartApps** will allow you to produce a new SmartApp.
 
-![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-MySmartApps.png "MySmartApps.png")
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-MySmartApps.png "MySmartApps.png")
 
--   Find the button on this page labeled **+New SmartApp** and click it.
+- Find the button on this page labeled **+New SmartApp** and click it.
 
-![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-NewSmartApp.png "NewSmartApp.png")
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-NewSmartApp.png "NewSmartApp.png")
 
--   Since you already have the code in your computer’s clipboard, find the tab along the top section called **From Code**. In the area provided, paste (typically CTRL+V) the code you copied from GitHub. Click **Create** in the bottom left corner of the page.
+- Since you already have the code in your computer’s clipboard, find the tab along the top section called **From Code**. In the area provided, paste (typically CTRL+V) the code you copied from GitHub. Click **Create** in the bottom left corner of the page.
 
-![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-NewSmartAppCreate.png "NewSmartAppCreate.png")
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/700px-NewSmartAppCreate.png "NewSmartAppCreate.png")
 
--    This will bring up another page, with the code now formatted within the IDE. If the code was copied correctly, there are no other steps except to save and publish the code. In the upper right corner of the page, find and click **Save**. Now, click **Publish (For Me)**, and you should receive a confirmation that the code has been published successfully.
-![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/SavePublish.png "SavePublish.png")
+- This will bring up another page, with the code now formatted within the IDE. If the code was copied correctly, there are no other steps except to save and publish the code. In the upper right corner of the page, find and click **Save**. Now, click **Publish (For Me)**, and you should receive a confirmation that the code has been published successfully.
+
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/SavePublish.png "SavePublish.png")
 
 ### Advanced Installation
 
@@ -95,7 +96,7 @@ Once you have integration, the code you need will be available to you to downloa
     |---------|--------|----------|
     |tonesto7|pushover-manager|master|
 
-![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/CI-IDELink.png "CI-IDELink.png")
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/CI-IDELink.png "CI-IDELink.png")
 
 The final step is to press the **Update** button at the bottom left corner of the screen, or go back to your code by using the button in the upper-right region of the page, then **Save**, then **Publish** the SmartApp again.
 
