@@ -53,8 +53,14 @@ The authors of this application will not be responsible for any damages that may
 Installation
 ------------
 
-The code for the SmartThings SmartApp is found on the GitHub site:
+### Automated Installer (Highly Recommended)
+This is the simplest way to Install Pushover Manager as well as other community apps
 
+Please visit here for more info: [Things That Are Smart Wiki: SmartThings Community Installer](http://thingsthataresmart.wiki/index.php?title=Community_Installer_(Free_Marketplace))
+
+
+### IDE Github Integration
+The code for the SmartThings SmartApp is found on the GitHub site:
 [https://raw.githubusercontent.com/tonesto7/pushover-manager/master/smartapps/tonesto7/pushover-manager.src/pushover-manager.groovy`](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/smartapps/tonesto7/pushover-manager.src/pushover-manager.groovy)
 
 While on the GitHub site, find the **Raw** button and click it. This will bring up a non-formatted page with just the code present. Select all of the code (typically CTRL+A) and copy It (typically CTRL+C).
@@ -102,10 +108,33 @@ The final step is to press the **Update** button at the bottom left corner of th
 
 ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/SavePublish.png "SavePublish.png")
 
+
+### SmartApp Configuration
+Once you finished following the installation procedure above you will need to actually install the Pushover Manager SmartApp using the SmartThings Classic MobileApp
+
+- Open the SmartThings Mobile App (It is important to use the Classic app, as we have reports the new mobile app does not play well with custom SmartApps):
+- Go to "**Marketplace**" and select "**SmartApps**" tab.
+- Marketplace is the "building", "star" or "sunlight" icon second from the right at the bottom of the mobile app
+- Scroll to the bottom of the list, select"**My Apps**"
+- Select"**Pushover Manager**" from the list.
+- You will see this page on your screen:
+    ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/AppNewInstall.png "AppNewInstall.png")
+ Enter Nest Login credentials when prompted.
+* Choose '''Structure'''
+* Choose '''Thermostats'''
+* Choose '''Protects'''
+* Choose '''Cameras'''
+* Choose ''Add Presence Device'' (Optional)
+* Choose ''Add Weather Device'' (Optional)
+* Tap '''"Next"'''
+* Review and Modify any preferences (Optional)
+* Tap on "**Done**"
+
+
 Usage
 -----
 
-Once you finished following the installation procedure above you will be presented with the following screen:
+Once you finished following the installation procedure above you will need to actually install the smartapp using 
 
 ![](https://raw.githubusercontent.com/tonesto7/pushover-manager/master/images/250px-CI-OpenScreen.png "CI-OpenScreen.png")
 
