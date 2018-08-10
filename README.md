@@ -157,6 +157,7 @@ Once you finished following the installation procedure above you will need to ac
 ## Community SmartApps with Pushover Manager Integration
 
 - [NST Manager](https://community.smartthings.com/t/release-nst-manager-v5-0/)
+- [Efergy Manager](https://github.com/tonesto7/efergy-manager)
 
 -------------
 ## Developers: Adding Support for Pushover Manager to your SmartApps
