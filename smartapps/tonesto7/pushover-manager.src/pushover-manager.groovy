@@ -17,7 +17,7 @@
 
 import groovy.json.*
 def appVer() { return "v1.0.0" }
-def appDate() { return "8-09-2018" }
+def appDate() { return "8-10-2018" }
 
 definition(
     name: "Pushover Manager",
@@ -87,18 +87,18 @@ def mainPage() {
                     def str = ""
                     devices?.each { cl-> str += "${str=="" ? "" : "\n"} • ${cl}" }
                     paragraph title: "Discovered Clients:", (str != "" ? str : "No Clients Found..."), state: "complete"
-                    href "testMessagePage", title: "Send a Test Message", description: ""
+                    href "testMessagePage", title: "Send a Test Message", description: "", required: false
                 }
             }
             section("Pushover Clients:") {
-                href "getAppsPage", title: "Pushover Client Apps", description: ""
+                href "getAppsPage", title: "Pushover Client Apps", description: "", required: false
             }
             section("More Info:") {
-                href "infoPage", title: "More Information", description: ""
+                href "infoPage", title: "More Information", description: "", required: false
             }
             section("Name this App:") {
                 paragraph "This name is used to help identify this install in 3rd Party apps, and is especially important if you install this app multiple times for different App keys" 
-                label title: "App Name", required: true, defaultValue: "${app?.name}"
+                label title: "App Name", defaultValue: "${app?.name}", required: false
             }
         } else {
             section() { paragraph title: "New install detected...", "1. Press Done to install the app\n2. Return to main screen\n3. Tap on Automations\n4. Tap on SmartApps tab\n5. Scroll and Tap on Pushover-Manager\n6. Complete App configuration process\n7. Press Done to Complete platform integration", state: "complete"}
