@@ -16,8 +16,8 @@
  */
 
 import groovy.json.*
-def appVer() { return "v1.0.0" }
-def appDate() { return "8-10-2018" }
+def appVer() { return "v1.0.1" }
+def appDate() { return "7-08-2019" }
 
 definition(
     name: "Pushover Manager",
@@ -97,7 +97,7 @@ def mainPage() {
                 href "infoPage", title: "More Information", description: "", required: false
             }
             section("Name this App:") {
-                paragraph "This name is used to help identify this install in 3rd Party apps, and is especially important if you install this app multiple times for different App keys" 
+                paragraph "This name is used to help identify this install in 3rd Party apps, and is especially important if you install this app multiple times for different App keys"
                 label title: "App Name", defaultValue: "${app?.name}", required: false
             }
         } else {
@@ -165,7 +165,7 @@ def messageTest() {
                 paragraph title: "Oops", "Message Already Sent...\nGo Back to MainPage to Send again..."
             } else {
                 paragraph title: "Sending Message: ", "${settings?.testMessage}", state: "complete"
-                paragraph "Device(s): ${settings?.testDevices}" 
+                paragraph "Device(s): ${settings?.testDevices}"
                 buildPushMessage(settings?.testDevices, app?.getLabel() + " Test", settings?.testMessage)
             }
             state?.testMessageSent = true
@@ -179,7 +179,7 @@ private buildPushMessage(List devices, String title, String message) {
     data.devices = devices
     data?.msgData = [title: title, message: message, priority: 0, sound: settings?.testSound]
     sendTestMessage(devices, data)
-}  
+}
 
 def sendTestMessage(devices, data) {
     log.debug "Sending Test Message: (${data?.msgData?.message}) to Devices: ${devices}"
@@ -226,6 +226,7 @@ Boolean userKeyOk() {
     }
     return true
 }
+
 Boolean apiKeyOk() {
     if(!(settings?.apiKey?.trim() =~ /[A-Za-z0-9]{30}/)) {
         log.error "API Key '${settings?.apiKey}' is missing or not properly formatted!"
@@ -264,33 +265,38 @@ def locCommandHandler(evt) {
 }
 
 def getValidated(devList=false){
-    def validated = false
-    def params = [
-        uri: "https://api.pushover.net/1/users/validate.json",
+    Boolean validated = false
+    Map params = [
+        uri: "https://api.pushover.net",
+        path: "/1/users/validate.json",
         contentType: "application/json",
-        body: [token: settings?.apiKey?.trim(), user: settings?.userKey?.trim(), device: ""]
+        requestContentType: "application/json",
+        body: [token: settings?.apiKey?.trim() as String, user: settings?.userKey?.trim() as String] as Map
     ]
-    def deviceOptions
+    List deviceOptions = []
     if (!apiKeyOk() || !userKeyOk()) { return }
     try {
-        httpPost(params) { resp ->
+        httpPostJson(params) { resp ->
             if(resp?.status != 200) {
-                // sendPush("ERROR: 'Pushover Me When' received HTTP error ${resp?.status}. Check your keys!")
                 log.error "Received HTTP error ${resp.status}. Check your keys!"
             } else {
-                if(devList) {
-                    if(resp?.data && resp?.data?.devices) {
-                        // log.debug "Found (${resp?.data?.devices?.size()}) Pushover Devices..."
-                        deviceOptions = resp?.data?.devices
-                        state?.pushoverDevices = resp?.data?.devices
-                    } else { 
-                        log.error "Device List is empty"
-                        state?.pushoverDevices = []
+                if(resp?.data) {
+                    if(resp?.data?.status && resp?.data?.status == 1) {
+                        validated = true
                     }
-                } else {
-                    validated = true
-                }
+                    if(devList) {
+                        if(resp?.data?.devices) {
+                            // log.debug "Found (${resp?.data?.devices?.size()}) Pushover Devices..."
+                            deviceOptions = resp?.data?.devices
+                            state?.pushoverDevices = resp?.data?.devices
+                        } else {
+                            log.error "Device List is empty"
+                            state?.pushoverDevices = []
+                        }
+                    }
+                } else { validated = false }
             }
+            log.debug "getValidated | Validated: ${validated} | Resp | status: ${resp?.status} | data: ${resp?.data}"
         }
     } catch (Exception ex) {
         if(ex instanceof groovyx.net.http.HttpResponseException && ex?.response) {
@@ -298,7 +304,7 @@ def getValidated(devList=false){
         } else {
             log.error "An invalid key was probably entered. PushOver Server Returned: ${ex}"
         }
-    } 
+    }
     return devList ? deviceOptions : validated
 }
 
@@ -321,7 +327,7 @@ def getSoundOptions() {
 }
 
 def filterPriorityMsg(msg, msgPr) {
-    if(msg?.startsWith("[L]")) { 
+    if(msg?.startsWith("[L]")) {
         msgPr = "-1"
         msg = msg?.minus("[L]")
     } else if(msg?.startsWith("[N]")) {
@@ -337,7 +343,7 @@ def filterPriorityMsg(msg, msgPr) {
     return [msg: msg, msgPr: msgPr]
 }
 
-include 'asynchttp_v1'
+
 
 void sendPushoverMessage(deviceName, msgData) {
     // log.debug "sendPushoverMessage($deviceName, $msgData)"
@@ -364,7 +370,8 @@ void sendPushoverMessage(deviceName, msgData) {
             if(msgData?.html == true) { bodyItems?.html = 1 }
 
             Map params = [uri: "https://api.pushover.net/1/messages.json"]
-            String imgStr = hasImage ? getImageData(msgData?.image?.url, msgData?.image?.type) as String : null
+            // String imgStr = hasImage ? getImageData(msgData?.image?.url, msgData?.image?.type) as String : null
+            String imgStr = null
             if(hasImage && imgStr) {
                 imgStr = new JsonOutput().toJson(imgStr) as String
                 imgStr = imgStr.replaceFirst("\"","")
@@ -394,8 +401,12 @@ void sendPushoverMessage(deviceName, msgData) {
             }
             // log.debug "body (${params?.body?.toString()?.length()}): ${params?.body}"
             // log.debug "$params"
-            
-            asynchttp_v1.post(pushoverResponse, params, [hasImage: (hasImage && imgStr)])
+            if(getPlatform() != "SmartThings") {
+                asynchttpPost(pushoverResponse, params, [hasImage: (hasImage && imgStr)])
+            } else {
+                include 'asynchttp_v1'
+                asynchttp_v1.post(pushoverResponse, params, [hasImage: (hasImage && imgStr)])
+            }
         }
     }
 }
@@ -413,7 +424,7 @@ def pushoverResponse(resp, data) {
         if(resp?.status == 200) {
             log.debug "Message Received by Pushover Server${(remain && limit) ? " | Monthly Messages Remaining (${remain} of ${limit})" : ""}"
             state?.messageData = [lastMessage: msgData?.message, lastMessageDt: formatDt(new Date()), remain: remain, limit: limit, resetDt: resetDt]
-        } else if (resp?.status == 429) { 
+        } else if (resp?.status == 429) {
             log.warn "Couldn't Send Notification... You have reached your (${limit}) notification limit for the month"
         } else {
             if(resp?.hasError()) {
@@ -429,38 +440,38 @@ def pushoverResponse(resp, data) {
     }
 }
 
-def getImageData(url, fileType) {
-    try {
-        def params = [uri: url, contentType: "text/plain; charset=UTF-8"]
-        httpGet(params) { resp ->
-            if(resp?.status == 200) {
-                if(resp?.data) {
-                    String rawText = ""
-                    def sizeHeader = resp?.getHeaders("Content-Length")
-                    def size = (sizeHeader?.value && sizeHeader?.value[0] && sizeHeader?.value[0]?.isNumber()) ? sizeHeader.value[0] : null
-                    if(size) {
-                        if(size?.toLong() > 2621440) {
-                            log.debug("FileSize: (${getFileSize(size)})")
-                            log.warn "unable to encode file because it is larger than the 2.5MB size limit"
-                            return null
-                        } else {
-                            StringReader sr = resp?.getData()
-                            for (int i = 0; i < size?.toInteger(); i++) { char c = (char) sr?.read(); rawText += c; }
-                            sr?.close()
-                            return rawText as String
-                        }
-                    } else { return null }
-                }
-            } else {
-                log.error("getImageData() Resp: ${resp?.status} ${url}")
-                return null
-            }
-        }
-    } catch (ex) {
-        log.error "getImageData() Exception:", ex
-        return null
-    }
-}
+// def getImageData(url, fileType) {
+//     try {
+//         def params = [uri: url, contentType: "text/plain; charset=UTF-8"]
+//         httpGet(params) { resp ->
+//             if(resp?.status == 200) {
+//                 if(resp?.data) {
+//                     String rawText = ""
+//                     def sizeHeader = resp?.getHeaders("Content-Length")
+//                     def size = (sizeHeader?.value && sizeHeader?.value[0] && sizeHeader?.value[0]?.isNumber()) ? sizeHeader.value[0] : null
+//                     if(size) {
+//                         if(size?.toLong() > 2621440) {
+//                             log.debug("FileSize: (${getFileSize(size)})")
+//                             log.warn "unable to encode file because it is larger than the 2.5MB size limit"
+//                             return null
+//                         } else {
+//                             StringReader sr = resp?.getData()
+//                             for (int i = 0; i < size?.toInteger(); i++) { char c = (char) sr?.read(); rawText += c; }
+//                             sr?.close()
+//                             return rawText as String
+//                         }
+//                     } else { return null }
+//                 }
+//             } else {
+//                 log.error("getImageData() Resp: ${resp?.status} ${url}")
+//                 return null
+//             }
+//         }
+//     } catch (ex) {
+//         log.error "getImageData() Exception:", ex
+//         return null
+//     }
+// }
 
 def getFileSize(sizeVal) {
     String outSize = null;
@@ -486,4 +497,15 @@ def formatDt(dt, mdy = true) {
     def tf = new java.text.SimpleDateFormat(formatVal)
     if(location?.timeZone) { tf.setTimeZone(location?.timeZone) }
     return tf.format(dt)
+}
+
+private getPlatform() {
+    def p = "SmartThings"
+    if(state?.hubPlatform == null) {
+        try { [dummy: "dummyVal"]?.encodeAsJson(); } catch (e) { p = "Hubitat" }
+        // p = (location?.hubs[0]?.id?.toString()?.length() > 5) ? "SmartThings" : "Hubitat"
+        state?.hubPlatform = p
+        log.debug "hubPlatform: (${state?.hubPlatform})"
+    }
+    return state?.hubPlatform
 }
